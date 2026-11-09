@@ -428,7 +428,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             playWelcomeSound()
         } else if MusicManager.shared.isNowPlayingDeprecated
-            && Defaults[.mediaController] == .nowPlaying
+            && (Defaults[.mediaController] == .nowPlaying || Defaults[.mediaController] == .netease)
         {
             DispatchQueue.main.async {
                 self.showOnboardingWindow(step: .musicPermission)

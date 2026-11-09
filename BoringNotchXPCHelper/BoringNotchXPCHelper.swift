@@ -139,6 +139,26 @@ class BoringNotchXPCHelper: NSObject, BoringNotchXPCHelperProtocol {
         reply(false)
     }
 
+    // MARK: - NetEase Cloud Music menu control
+    // AX calls block on cross-process messages, so run them off the XPC delivery queue.
+    private static let netEaseQueue = DispatchQueue(label: "theboringteam.boringnotch.netease-menu")
+
+    @objc func pressNetEaseMenuCommand(_ command: String, with reply: @escaping (Bool) -> Void) {
+        guard let cmd = NetEaseMenuControl.Command(rawValue: command), cmd != .favorite else {
+            reply(false)
+            return
+        }
+        Self.netEaseQueue.async { reply(NetEaseMenuControl.press(cmd)) }
+    }
+
+    @objc func netEaseFavoriteState(with reply: @escaping (NSNumber?) -> Void) {
+        Self.netEaseQueue.async { reply(NetEaseMenuControl.readFavorited().map { NSNumber(value: $0) }) }
+    }
+
+    @objc func setNetEaseFavorite(_ favorite: Bool, with reply: @escaping (Bool) -> Void) {
+        Self.netEaseQueue.async { reply(NetEaseMenuControl.setFavorited(favorite)) }
+    }
+
     // MARK: - Private helpers for DisplayServices / IOKit access
     private func displayServicesGetBrightness(displayID: CGDirectDisplayID, out: inout Float) -> Bool {
         guard let sym = dlsym(DisplayServicesHandle.handle, "DisplayServicesGetBrightness") else { return false }

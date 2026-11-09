@@ -243,6 +243,45 @@ final class XPCHelperClient: NSObject {
     }
 }
 
+
+// MARK: - NetEase Cloud Music
+// Same pattern as the brightness calls above; errors (helper not reachable) map to false / nil.
+extension XPCHelperClient {
+    nonisolated func pressNetEaseMenuCommand(_ command: String) async -> Bool {
+        do {
+            let service = await MainActor.run { ensureRemoteService() }
+            return try await service.withContinuation { service, continuation in
+                service.pressNetEaseMenuCommand(command) { continuation.resume(returning: $0) }
+            }
+        } catch {
+            return false
+        }
+    }
+
+    nonisolated func netEaseFavoriteState() async -> Bool? {
+        do {
+            let service = await MainActor.run { ensureRemoteService() }
+            let result: NSNumber? = try await service.withContinuation { service, continuation in
+                service.netEaseFavoriteState { continuation.resume(returning: $0) }
+            }
+            return result?.boolValue
+        } catch {
+            return nil
+        }
+    }
+
+    nonisolated func setNetEaseFavorite(_ favorite: Bool) async -> Bool {
+        do {
+            let service = await MainActor.run { ensureRemoteService() }
+            return try await service.withContinuation { service, continuation in
+                service.setNetEaseFavorite(favorite) { continuation.resume(returning: $0) }
+            }
+        } catch {
+            return false
+        }
+    }
+}
+
 extension Notification.Name {
     static let accessibilityAuthorizationChanged = Notification.Name("accessibilityAuthorizationChanged")
 }

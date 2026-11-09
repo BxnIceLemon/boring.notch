@@ -700,7 +700,7 @@ struct Media: View {
     // Only show controller options that are available on this macOS version
     private var availableMediaControllers: [MediaControllerType] {
         if MusicManager.shared.isNowPlayingDeprecated {
-            return MediaControllerType.allCases.filter { $0 != .nowPlaying }
+            return MediaControllerType.allCases.filter { $0 != .nowPlaying && $0 != .netease }
         } else {
             return MediaControllerType.allCases
         }

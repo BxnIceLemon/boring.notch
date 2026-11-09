@@ -20,5 +20,9 @@ import Foundation
     func isScreenBrightnessAvailable(with reply: @escaping (Bool) -> Void)
     func currentScreenBrightness(with reply: @escaping (NSNumber?) -> Void)
     func setScreenBrightness(_ value: Float, with reply: @escaping (Bool) -> Void)
+    // NetEase Cloud Music menu control (Accessibility). command: playPause | nextTrack | previousTrack
+    func pressNetEaseMenuCommand(_ command: String, with reply: @escaping (Bool) -> Void)
+    func netEaseFavoriteState(with reply: @escaping (NSNumber?) -> Void)
+    func setNetEaseFavorite(_ favorite: Bool, with reply: @escaping (Bool) -> Void)
 }
 

@@ -131,6 +131,13 @@ class MusicManager: ObservableObject {
             newController = SpotifyController()
         case .youtubeMusic:
             newController = YouTubeMusicController()
+        case .netease:
+            // Reads through the same MediaRemote adapter as Now Playing, so it has the same availability.
+            if !self.isNowPlayingDeprecated {
+                newController = NetEaseMusicController()
+            } else {
+                return nil
+            }
         }
 
         // Set up state observation for the new controller

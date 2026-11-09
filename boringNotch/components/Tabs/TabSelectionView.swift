@@ -5,18 +5,23 @@
 //  Created by Hugo Persson on 2024-08-25.
 //
 
+import Defaults
 import SwiftUI
 
 struct TabModel: Identifiable {
     let id = UUID()
     let label: String
+    /// SF Symbol name, or the name of a template image in Assets.xcassets when `isSystemImage` is false.
     let icon: String
+    var isSystemImage: Bool = true
     let view: NotchViews
 }
 
 let tabs = [
     TabModel(label: "Home", icon: "house.fill", view: .home),
-    TabModel(label: "Shelf", icon: "tray.fill", view: .shelf)
+    TabModel(label: "Shelf", icon: "tray.fill", view: .shelf),
+    TabModel(label: "Codex", icon: "codex", isSystemImage: false, view: .codex),
+    TabModel(label: "Claude", icon: "claude", isSystemImage: false, view: .claude)
 ]
 
 struct TabSelectionView: View {
@@ -24,8 +29,9 @@ struct TabSelectionView: View {
     @Namespace var animation
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(tabs) { tab in
-                    TabButton(label: tab.label, icon: tab.icon, selected: coordinator.currentView == tab.view) {
+            // The Shelf tab only exists while the Shelf feature is enabled.
+            ForEach(tabs.filter { $0.view != .shelf || Defaults[.boringShelf] }) { tab in
+                    TabButton(label: tab.label, icon: tab.icon, isSystemImage: tab.isSystemImage, selected: coordinator.currentView == tab.view) {
                         withAnimation(.smooth) {
                             coordinator.currentView = tab.view
                         }

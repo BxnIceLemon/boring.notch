@@ -200,3 +200,44 @@ extension Defaults.Keys {
 
     static let didClearLegacyURLCacheV1 = Key<Bool>("didClearLegacyURLCache_v1", default: false)
 }
+
+// Display names for the pickers. rawValue is the persisted setting value and must not change.
+extension MediaControllerType {
+    var localizedName: String {
+        switch self {
+        case .nowPlaying: return String(localized: "Now Playing", comment: "Music source")
+        case .appleMusic: return String(localized: "Apple Music", comment: "Music source")
+        case .spotify: return String(localized: "Spotify", comment: "Music source")
+        case .youtubeMusic: return String(localized: "YouTube Music", comment: "Music source")
+        }
+    }
+}
+
+extension SneakPeekStyle {
+    var localizedName: String {
+        switch self {
+        case .standard: return String(localized: "Default", comment: "Sneak peek style")
+        case .inline: return String(localized: "Inline", comment: "Sneak peek style")
+        }
+    }
+}
+
+extension OptionKeyAction {
+    var localizedName: String {
+        switch self {
+        case .openSettings: return String(localized: "Open System Settings", comment: "Option key behaviour")
+        case .showHUD: return String(localized: "Show HUD", comment: "Option key behaviour")
+        case .none: return String(localized: "No Action", comment: "Option key behaviour")
+        }
+    }
+}
+
+extension SliderColorEnum {
+    var localizedName: String {
+        switch self {
+        case .white: return String(localized: "White", comment: "Slider color")
+        case .albumArt: return String(localized: "Match album art", comment: "Slider color")
+        case .accent: return String(localized: "Accent color", comment: "Slider color")
+        }
+    }
+}

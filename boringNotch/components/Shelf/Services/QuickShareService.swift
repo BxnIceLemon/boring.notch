@@ -88,8 +88,8 @@ class QuickShareService: ObservableObject {
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
         panel.canChooseFiles = true
-        panel.title = "Select Files for \(provider.id)"
-        panel.message = "Choose files to share via \(provider.id)"
+        panel.title = String(localized: "Select Files for \(provider.displayName)")
+        panel.message = String(localized: "Choose files to share via \(provider.displayName)")
 
         let completion: (NSApplication.ModalResponse) -> Void = { [weak self] response in
             defer {
@@ -211,6 +211,12 @@ private class SharingServiceDelegate: NSObject {}
 // MARK: - App Storage Extension for Provider Selection
 
 extension QuickShareProvider {
+    /// What to show for this provider. Real services already carry a localized title from the
+    /// system; only the built-in fallback entry needs translating. `id` stays the persisted value.
+    var displayName: String {
+        id == "System Share Menu" ? String(localized: "System Share Menu") : id
+    }
+
     static var defaultProvider: QuickShareProvider {
         let svc = QuickShareService.shared
 

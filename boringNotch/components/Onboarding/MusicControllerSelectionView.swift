@@ -88,7 +88,7 @@ struct ControllerOptionView: View {
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(controller.rawValue)
+                Text(controller.localizedName)
                     .font(.headline)
                     .fontWeight(.semibold)
 
@@ -123,13 +123,13 @@ extension MediaControllerType {
     var description: String {
         switch self {
         case .nowPlaying:
-            return "Works with most media apps, including browsers, to detect what's playing. Note: This may be removed in a future macOS version."
+            return String(localized: "Works with most media apps, including browsers, to detect what's playing. Note: This may be removed in a future macOS version.", comment: "Music source description")
         case .spotify:
-            return "Connects directly to the Spotify app."
+            return String(localized: "Connects directly to the Spotify app.", comment: "Music source description")
         case .appleMusic:
-            return "Connects directly to the Apple Music app."
+            return String(localized: "Connects directly to the Apple Music app.", comment: "Music source description")
         case .youtubeMusic:
-            return "Requires a third-party client with API plugin enabled."
+            return String(localized: "Requires a third-party client with API plugin enabled.", comment: "Music source description")
         }
     }
 }

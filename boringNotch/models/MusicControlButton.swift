@@ -47,25 +47,25 @@ enum MusicControlButton: String, CaseIterable, Identifiable, Codable, Defaults.S
     var label: String {
         switch self {
         case .shuffle:
-            return "Shuffle"
+            return String(localized: "Shuffle", comment: "Music control button")
         case .previous:
-            return "Previous"
+            return String(localized: "Previous", comment: "Music control button")
         case .playPause:
-            return "Play/Pause"
+            return String(localized: "Play/Pause", comment: "Music control button")
         case .next:
-            return "Next"
+            return String(localized: "Next", comment: "Music control button")
         case .repeatMode:
-            return "Repeat"
+            return String(localized: "Repeat", comment: "Music control button")
         case .volume:
-            return "Volume"
+            return String(localized: "Volume", comment: "Music control button")
         case .favorite:
-            return "Favorite"
+            return String(localized: "Favorite", comment: "Music control button")
         case .goBackward:
-            return "Backward 15s"
+            return String(localized: "Backward 15s", comment: "Music control button")
         case .goForward:
-            return "Forward 15s"
+            return String(localized: "Forward 15s", comment: "Music control button")
         case .none:
-            return "Empty slot"
+            return String(localized: "Empty slot", comment: "Music control button")
         }
     }
 

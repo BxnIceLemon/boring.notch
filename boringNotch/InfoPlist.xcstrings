@@ -1,0 +1,105 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSAppleEventsUsageDescription": {
+      "comment": "Permission prompt shown by macOS",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "This app uses AppleEvents to control music"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boring Notch 需要通过 AppleEvents 控制音乐播放。"
+          }
+        }
+      }
+    },
+    "NSCalendarsUsageDescription": {
+      "comment": "Permission prompt shown by macOS",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "This app uses the calendar to display your calendar events"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boring Notch 需要访问日历，以便在刘海中显示你的日程。"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "comment": "Permission prompt shown by macOS",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "This app uses the camera to display a live camera view"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boring Notch 需要使用摄像头，以便显示实时镜子画面。"
+          }
+        }
+      }
+    },
+    "NSRemindersUsageDescription": {
+      "comment": "Permission prompt shown by macOS",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "This app uses Reminders to display your scheduled reminder in the calendar"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boring Notch 需要访问提醒事项，以便在日历中显示你计划的提醒。"
+          }
+        }
+      }
+    },
+    "CFBundleDisplayName": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Boring Notch"
+          }
+        }
+      },
+      "shouldTranslate": false
+    },
+    "CFBundleName": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "boringNotch"
+          }
+        }
+      },
+      "shouldTranslate": false
+    },
+    "NSHumanReadableCopyright": {
+      "shouldTranslate": false
+    }
+  },
+  "version": "1.0"
+}

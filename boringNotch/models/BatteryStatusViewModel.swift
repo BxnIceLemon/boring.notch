@@ -56,7 +56,7 @@ class BatteryStatusViewModel: ObservableObject {
             print("🔌 Power source: \(isPluggedIn ? "Connected" : "Disconnected")")
             withAnimation {
                 self.isPluggedIn = isPluggedIn
-                self.statusText = isPluggedIn ? "Plugged In" : "Unplugged"
+                self.statusText = isPluggedIn ? String(localized: "Plugged In", comment: "Battery status") : String(localized: "Unplugged", comment: "Battery status")
                 self.notifyImportanChangeStatus()
             }
 
@@ -71,7 +71,7 @@ class BatteryStatusViewModel: ObservableObject {
             self.notifyImportanChangeStatus()
             withAnimation {
                 self.isInLowPowerMode = isEnabled
-                self.statusText = "Low Power: \(self.isInLowPowerMode ? "On" : "Off")"
+                self.statusText = self.isInLowPowerMode ? String(localized: "Low Power: On", comment: "Battery status") : String(localized: "Low Power: Off", comment: "Battery status")
             }
 
         case .isChargingChanged(let isCharging):
@@ -83,8 +83,10 @@ class BatteryStatusViewModel: ObservableObject {
                 self.isCharging = isCharging
                 self.statusText =
                     isCharging
-                    ? "Charging battery"
-                    : (self.levelBattery < self.maxCapacity ? "Not charging" : "Full charge")
+                    ? String(localized: "Charging battery", comment: "Battery status")
+                    : (self.levelBattery < self.maxCapacity
+                        ? String(localized: "Not charging", comment: "Battery status")
+                        : String(localized: "Full charge", comment: "Battery status"))
             }
 
         case .timeToFullChargeChanged(let time):
@@ -114,7 +116,7 @@ class BatteryStatusViewModel: ObservableObject {
             self.isInLowPowerMode = batteryInfo.isInLowPowerMode
             self.timeToFullCharge = batteryInfo.timeToFullCharge
             self.maxCapacity = batteryInfo.maxCapacity
-            self.statusText = batteryInfo.isPluggedIn ? "Plugged In" : "Unplugged"
+            self.statusText = batteryInfo.isPluggedIn ? String(localized: "Plugged In", comment: "Battery status") : String(localized: "Unplugged", comment: "Battery status")
         }
     }
 

@@ -162,12 +162,12 @@ struct MusicControlsView: View {
                         return min(max(progressed, 0), musicManager.songDuration)
                     }()
                     let line: String = {
-                        if musicManager.isFetchingLyrics { return "Loading lyrics…" }
+                        if musicManager.isFetchingLyrics { return String(localized: "Loading lyrics…") }
                         if !musicManager.syncedLyrics.isEmpty {
                             return musicManager.lyricLine(at: currentElapsed)
                         }
                         let trimmed = musicManager.currentLyrics.trimmingCharacters(in: .whitespacesAndNewlines)
-                        return trimmed.isEmpty ? "No lyrics found" : trimmed.replacingOccurrences(of: "\n", with: " ")
+                        return trimmed.isEmpty ? String(localized: "No lyrics found") : trimmed.replacingOccurrences(of: "\n", with: " ")
                     }()
                     let isPersian = line.unicodeScalars.contains { scalar in
                         let v = scalar.value

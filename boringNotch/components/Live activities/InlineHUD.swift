@@ -140,13 +140,13 @@ struct InlineHUD: View {
     func Type2Name(_ type: SneakContentType) -> String {
         switch(type) {
             case .volume:
-                return "Volume"
+                return String(localized: "Volume", comment: "Inline HUD label")
             case .brightness:
-                return "Brightness"
+                return String(localized: "Brightness", comment: "Inline HUD label")
             case .backlight:
-                return "Backlight"
+                return String(localized: "Backlight", comment: "Inline HUD label")
             case .mic:
-                return "Mic"
+                return String(localized: "Mic", comment: "Inline HUD label")
             default:
                 return ""
         }

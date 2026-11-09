@@ -15,11 +15,12 @@ public struct AssociatedObject<Value: AnyObject> {
     private let policy: objc_AssociationPolicy
 
     public init(_ policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC) {
-        self.key = UnsafeRawPointer(Unmanaged.passUnretained(UniqueKey()).toOpaque())
+        // A dedicated, never-freed allocation gives each instance a stable, unique key.
+        // (Taking the address of a temporary object left the key dangling: the address
+        // could be reused, so two instances could end up sharing a key.)
+        self.key = UnsafeRawPointer(UnsafeMutableRawPointer.allocate(byteCount: 1, alignment: 1))
         self.policy = policy
     }
-
-    private final class UniqueKey {}
 
     public subscript<Owner: AnyObject>(_ owner: Owner) -> Value? {
         get { objc_getAssociatedObject(owner, key) as? Value }

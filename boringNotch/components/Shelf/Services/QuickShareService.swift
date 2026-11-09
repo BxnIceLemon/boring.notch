@@ -110,7 +110,8 @@ class QuickShareService: ObservableObject {
     
     // MARK: - Sharing
     @MainActor
-    func shareFilesOrText(_ items: [Any], using provider: QuickShareProvider, from view: NSView?) async {
+    /// - Parameter cleanupURLs: temporary files to delete once the share session has ended.
+    func shareFilesOrText(_ items: [Any], using provider: QuickShareProvider, from view: NSView?, cleanupURLs: [URL] = []) async {
         let fileURLs = items.compactMap { $0 as? URL }.filter { $0.isFileURL }
         // Stop any previous sharing access
         stopSharingAccessingURLs()
@@ -121,6 +122,16 @@ class QuickShareService: ObservableObject {
         let delegate = SharingStateManager.shared.makeDelegate { [weak self] in
             self?.lifecycleDelegate = nil
             self?.stopSharingAccessingURLs()
+            // The session can "end" via SharingLifecycleDelegate's 2s fallback while a service
+            // is still reading the file, so give it extra time before deleting.
+            if !cleanupURLs.isEmpty {
+                Task {
+                    try? await Task.sleep(for: .seconds(60))
+                    for url in cleanupURLs {
+                        TemporaryFileStorageService.shared.removeTemporaryFileIfNeeded(at: url)
+                    }
+                }
+            }
         }
         lifecycleDelegate = delegate
 
@@ -171,8 +182,8 @@ private class SharingServiceDelegate: NSObject {}
                 await shareFilesOrText([text], using: shareProvider, from: view)
             } else {
                 if let tempTextURL = await TemporaryFileStorageService.shared.createTempFile(for: .text(text)) {
-                    await shareFilesOrText([tempTextURL], using: shareProvider, from: view)
-                    TemporaryFileStorageService.shared.removeTemporaryFileIfNeeded(at: tempTextURL)
+                    // Deleted after the share session ends, not right after it starts.
+                    await shareFilesOrText([tempTextURL], using: shareProvider, from: view, cleanupURLs: [tempTextURL])
                 } else {
                     await shareFilesOrText([text], using: shareProvider, from: view)
                 }

@@ -51,6 +51,12 @@ final class YouTubeMusicController: MediaControllerProtocol {
     
     private var updateTimer: Timer?
     private var appStateObserver: Task<Void, Never>?
+
+    deinit {
+        appStateObserver?.cancel()
+        updateTimer?.invalidate()
+        artworkFetchTask?.cancel()
+    }
     private var reconnectDelay: TimeInterval = 1.0
     
     // MARK: - Initialization
@@ -184,8 +190,8 @@ final class YouTubeMusicController: MediaControllerProtocol {
         }
         
         Task { @MainActor in
+            // Keep appStateObserver alive so a later relaunch is still detected.
             stopPeriodicUpdates()
-            appStateObserver?.cancel()
         }
         
         Task {

@@ -11,6 +11,7 @@ struct TabButton: View {
     let label: String
     let icon: String
     var isSystemImage: Bool = true
+    var iconSize: CGFloat = 16
     let selected: Bool
     let onClick: () -> Void
     
@@ -28,11 +29,14 @@ struct TabButton: View {
         if isSystemImage {
             Image(systemName: icon)
         } else {
-            // Template asset drawn to sit at the same visual size as the SF Symbols next to it.
+            // Template asset drawn at `iconSize` but laid out in a 16pt slot like the SF Symbols,
+            // so padded icons can be drawn larger without widening their tab.
             Image(icon)
                 .renderingMode(.template)
                 .resizable()
+                .interpolation(.high)
                 .scaledToFit()
+                .frame(width: iconSize, height: iconSize)
                 .frame(width: 16, height: 16)
         }
     }

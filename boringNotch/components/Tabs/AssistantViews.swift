@@ -136,7 +136,7 @@ struct AIAccountRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .center, spacing: 8) {
             Circle()
                 .fill(isActive || isDesktopActive ? Color.green : Color.white.opacity(0.18))
                 .frame(width: 6, height: 6)
@@ -145,7 +145,8 @@ struct AIAccountRow: View {
             trailing
         }
         .padding(.horizontal, 8)
-        .frame(height: 26)
+        .padding(.vertical, 5)
+        .frame(minHeight: 34)
         .background(
             RoundedRectangle(cornerRadius: 7)
                 .fill(Color.white.opacity(hovering ? 0.10 : (isActive ? 0.06 : 0)))
@@ -157,19 +158,21 @@ struct AIAccountRow: View {
         .contextMenu { menu }
     }
 
+    /// Name on the first line, plan and where the account is in use on the second.
     private var nameColumn: some View {
-        HStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 3) {
             Text(account.displayName)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .truncationMode(.middle)
-                .layoutPriority(-1)
-            if let plan = account.planLabel { AITag(text: plan, color: .white.opacity(0.7)) }
-            if isActive && manager.provider == .claude { AITag(text: "CLI", color: .green) }
-            if isDesktopActive { AITag(text: "App", color: .green) }
-            if account.disabled { AITag(text: String(localized: "Disabled"), color: .gray) }
-            Spacer(minLength: 0)
+            HStack(spacing: 4) {
+                if let plan = account.planLabel { AITag(text: plan, color: .white.opacity(0.7)) }
+                if isActive && manager.provider == .claude { AITag(text: "CLI", color: .green) }
+                if isActive && manager.provider == .codex { AITag(text: String(localized: "Active"), color: .green) }
+                if isDesktopActive { AITag(text: "App", color: .green) }
+                if account.disabled { AITag(text: String(localized: "Disabled"), color: .gray) }
+            }
         }
         .frame(width: 150, alignment: .leading)
     }
@@ -177,7 +180,8 @@ struct AIAccountRow: View {
     @ViewBuilder
     private var windows: some View {
         if let usage = state?.usage, !usage.windows.isEmpty {
-            HStack(spacing: 10) {
+            // One line per window, like ccswap: 5h above, weekly below.
+            VStack(spacing: 4) {
                 ForEach(usage.windows, id: \.key) { window in
                     AIUsageRow(label: label(for: window.key), pct: window.pct, reset: window.resetDate)
                 }
@@ -315,11 +319,17 @@ struct AIUsageRow: View {
                 .font(.caption2.monospacedDigit())
                 .foregroundStyle(.white)
                 .frame(width: 30, alignment: .trailing)
-            // Always reserve the countdown column so bars line up from row to row.
-            Text(reset.map { $0 > Date() ? AIDates.countdown(to: $0) : "" } ?? "")
+            // Always reserve the reset columns so bars line up from row to row.
+            let upcoming = reset.flatMap { $0 > Date() ? $0 : nil }
+            Text(upcoming.map { AIDates.countdown(to: $0) } ?? "")
                 .font(.caption2.monospacedDigit())
                 .foregroundStyle(.gray)
                 .frame(width: 52, alignment: .leading)
+                .lineLimit(1)
+            Text(upcoming.map { $0.formatted(.dateTime.month(.defaultDigits).day().hour().minute()) } ?? "")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.gray.opacity(0.7))
+                .frame(width: 84, alignment: .leading)
                 .lineLimit(1)
         }
     }

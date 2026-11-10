@@ -23621,6 +23621,16 @@
         }
       }
     },
+    "Token expired; waiting for Codex to refresh it" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "令牌已过期，等待 Codex 刷新"
+          }
+        }
+      }
+    },
     "Token expired; waiting for the CLI to refresh it" : {
       "localizations" : {
         "zh-Hans" : {

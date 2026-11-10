@@ -150,7 +150,8 @@ final class AIAccountsManager: ObservableObject {
             case "http_429":
                 let retry = result["retryAfter"] as? Double
                 state.backoff = min(3600, max(retry ?? 900, state.backoff * 2, 900))
-            case "token_expired": state.backoff = 300          // Claude Code refreshes it on next use
+            // The owning app refreshes the live token on its next use (Codex usually within a minute).
+            case "token_expired": state.backoff = provider == .codex ? 60 : 300
             case "no_cli_login", "no_login", "refresh_dead", "no_refresh_token": state.backoff = 3600
             default: state.backoff = min(3600, max(120, state.backoff * 2))
             }
@@ -421,8 +422,13 @@ final class AIAccountsManager: ObservableObject {
     private func loadCache() {
         guard let data = try? Data(contentsOf: cacheURL),
               let cached = try? JSONDecoder().decode([String: AIUsageState].self, from: data) else { return }
-        // Keep the numbers but let the schedule start over (respecting any backoff still running).
-        usage = cached
+        // Keep the numbers. A backoff from a rate limit keeps running; any other error is retried now,
+        // since it was usually a passing state (token mid-rotation, network) of the previous run.
+        usage = cached.mapValues { state in
+            var state = state
+            if let error = state.error, error != "http_429" { state.nextPoll = .distantPast; state.backoff = 0 }
+            return state
+        }
     }
 
     private func saveCache() {

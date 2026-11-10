@@ -78,7 +78,7 @@ final class ClaudeAccounts {
             account.accountUuid = who.uuid
             account.organizationUuid = who.organizationUuid ?? account.organizationUuid
             account.organizationName = who.organizationName ?? (oauthAccount["organizationName"] as? String) ?? account.organizationName
-            account.plan = (oauthAccount["organizationRateLimitTier"] as? String) ?? (oauthAccount["billingType"] as? String) ?? account.plan
+            account.plan = Self.plan(credential: live, oauthAccount: oauthAccount) ?? account.plan
             try store.writeText(account.id, "credentials.json", live)
             try store.writeJSON(account.id, "oauthAccount.json", oauthAccount)
             if let index = accounts.firstIndex(where: { $0.id == account.id }) { accounts[index] = account } else { accounts.append(account) }
@@ -90,6 +90,17 @@ final class ClaudeAccounts {
             }
             return account.json
         }
+    }
+
+    /// Subscription type from the CLI credential ("max" + tier "default_claude_max_20x" → "max_20x").
+    static func plan(credential: String, oauthAccount: JSONObject) -> String? {
+        let oauth = JSONFile.parse(credential)?.object("claudeAiOauth") ?? [:]
+        let tier = oauth.string("rateLimitTier") ?? oauthAccount.string("organizationRateLimitTier")
+        guard let type = oauth.string("subscriptionType") else { return tier }
+        if let tier, let range = tier.range(of: #"_(\d+x)$"#, options: .regularExpression) {
+            return type + tier[range]
+        }
+        return type
     }
 
     // MARK: - Switch

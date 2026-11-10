@@ -26,6 +26,16 @@ struct AIAccount: Codable, Identifiable, Hashable {
 
     var displayName: String { alias?.isEmpty == false ? alias! : email }
 
+    /// Subscription type as a short tag ("Plus", "Pro", "Max", "Team").
+    var planLabel: String? {
+        guard var plan = plan?.lowercased(), !plan.isEmpty else { return nil }
+        for prefix in ["default_", "claude_"] where plan.hasPrefix(prefix) { plan.removeFirst(prefix.count) }
+        // "max_20x" → "Max 20x" (capitalize words, keep multipliers as they are)
+        return plan.split(separator: "_").map { word in
+            word.first?.isLetter == true ? word.prefix(1).uppercased() + word.dropFirst() : String(word)
+        }.joined(separator: " ")
+    }
+
     /// Short plan / organization label shown under the name.
     var subtitle: String? {
         if let plan, !plan.isEmpty {

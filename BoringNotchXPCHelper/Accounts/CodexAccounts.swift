@@ -145,6 +145,17 @@ final class CodexAccounts {
         guard var auth = isActive ? live : try store.readJSON(id, "auth.json") else { return ["error": "no_login"] }
 
         var response = request(auth, "/wham/usage")
+        if isActive, response["status"] as? Int == 401 {
+            // The live token belongs to ChatGPT/Codex and is never refreshed here. A 401 usually means
+            // it was just rotated, so read auth.json once more; if it is unchanged, wait for Codex.
+            let token = { (a: JSONObject?) in a?.object("tokens")?.string("access_token") }
+            if let reread = (try? readLive()) ?? nil, token(reread) != token(auth),
+               matches(account, Self.identity(of: reread)) {
+                auth = reread
+                response = request(auth, "/wham/usage")
+            }
+            if response["status"] as? Int == 401 { return ["error": "token_expired", "active": true] }
+        }
         if !isActive, let status = response["status"] as? Int, status == 401 {
             switch refreshSaved(id, auth) {
             case .success(let refreshed): auth = refreshed; response = request(auth, "/wham/usage")

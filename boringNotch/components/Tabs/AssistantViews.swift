@@ -164,6 +164,8 @@ struct AIAccountRow: View {
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .truncationMode(.middle)
+                .layoutPriority(-1)
+            if let plan = account.planLabel { AITag(text: plan, color: .white.opacity(0.7)) }
             if isActive && manager.provider == .claude { AITag(text: "CLI", color: .green) }
             if isDesktopActive { AITag(text: "App", color: .green) }
             if account.disabled { AITag(text: String(localized: "Disabled"), color: .gray) }
@@ -184,7 +186,7 @@ struct AIAccountRow: View {
         } else {
             Group {
                 if let error = state?.error {
-                    Text(AIAccountRow.errorText(error)).foregroundStyle(.orange)
+                    Text(AIAccountRow.errorText(error, manager.provider)).foregroundStyle(.orange)
                 } else {
                     Text("Waiting for the first reading…").foregroundStyle(.gray)
                 }
@@ -201,7 +203,7 @@ struct AIAccountRow: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 9))
                     .foregroundStyle(.orange)
-                    .help(AIAccountRow.errorText(error))
+                    .help(AIAccountRow.errorText(error, manager.provider))
             }
             if let credits = state?.usage?.resetCredits, credits.available > 0 {
                 AITag(text: "↺×\(credits.available)", color: .effectiveAccent)
@@ -231,7 +233,7 @@ struct AIAccountRow: View {
             lines.append(line)
         }
         if let credits = state?.usage?.resetCredits, credits.available > 0 { lines.append(resetCreditsText(credits)) }
-        if let error = state?.error { lines.append(AIAccountRow.errorText(error)) }
+        if let error = state?.error { lines.append(AIAccountRow.errorText(error, manager.provider)) }
         if let date = state?.lastSuccess {
             lines.append(String(localized: "Updated \(AIDates.countdown(to: Date(), now: date)) ago"))
         }
@@ -273,9 +275,12 @@ struct AIAccountRow: View {
         return String(localized: "Reset cards ×\(credits.available)")
     }
 
-    static func errorText(_ code: String) -> String {
+    static func errorText(_ code: String, _ provider: AIProvider) -> String {
         switch code {
-        case "token_expired": return String(localized: "Token expired; waiting for the CLI to refresh it")
+        case "token_expired":
+            return provider == .codex
+                ? String(localized: "Token expired; waiting for Codex to refresh it")
+                : String(localized: "Token expired; waiting for the CLI to refresh it")
         case "http_429": return String(localized: "Rate limited; retrying later")
         case "refresh_dead", "no_refresh_token": return String(localized: "Login expired; log in again and re-save")
         case "no_cli_login": return String(localized: "No CLI login; quota unavailable")

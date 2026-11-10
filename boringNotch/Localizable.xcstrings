@@ -201,6 +201,36 @@
         }
       }
     },
+    " · ChatGPT restarted" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · 已重启 ChatGPT"
+          }
+        }
+      }
+    },
+    " · restart ChatGPT to use it" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · 重启 ChatGPT 后生效"
+          }
+        }
+      }
+    },
+    " · restart running codex sessions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · 请重启正在运行的 codex 会话"
+          }
+        }
+      }
+    },
     " (default)" : {
       "comment" : "Suffix after the default app in the Open With menu",
       "localizations" : {
@@ -308,6 +338,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“正在播放”是旧版本中唯一的选项，适用于所有媒体 App。"
+          }
+        }
+      }
+    },
+    "“Most quota left” stays on the current account until it nears a limit, then moves to the account with the most room. “Soonest weekly reset first” keeps you on the account whose weekly quota resets soonest, so it isn't wasted." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“剩余额度最多”会一直使用当前账号，直到接近限额，再换到剩余额度最多的账号。“每周最早重置的优先”会优先使用每周额度最早重置的账号，避免额度浪费。"
           }
         }
       }
@@ -712,6 +752,16 @@
         }
       }
     },
+    "%@ is already in use" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已在使用中"
+          }
+        }
+      }
+    },
     "%d%%" : {
       "localizations" : {
         "ar" : {
@@ -912,6 +962,26 @@
         }
       }
     },
+    "%lld %%" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld %%"
+          }
+        }
+      }
+    },
+    "%lld min" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 分钟"
+          }
+        }
+      }
+    },
     "%lld%%" : {
       "localizations" : {
         "ar" : {
@@ -1008,6 +1078,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld%%"
+          }
+        }
+      }
+    },
+    "%lldd %lldh" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld天%lld小时"
+          }
+        }
+      }
+    },
+    "%lldh %lldm" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld小时%lld分"
+          }
+        }
+      }
+    },
+    "%lldm" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分"
           }
         }
       }
@@ -1308,6 +1408,76 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "• 新功能1"
+          }
+        }
+      }
+    },
+    "~/.claude.json could not be read; nothing was changed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取 ~/.claude.json，未做任何更改。"
+          }
+        }
+      }
+    },
+    "5-hour and weekly" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 小时与每周"
+          }
+        }
+      }
+    },
+    "5-hour only" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅 5 小时"
+          }
+        }
+      }
+    },
+    "5-hour window" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 小时窗口"
+          }
+        }
+      }
+    },
+    "5h" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5时"
+          }
+        }
+      }
+    },
+    "7d" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7天"
+          }
+        }
+      }
+    },
+    "A switch happens when any window reaches its threshold. Model limits add a gate for a Claude model's own weekly limit (names as shown on the account cards); a name without a number uses the weekly threshold. The required improvement stops two accounts near the line from switching back and forth." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "任一窗口达到阈值时就会切换。模型限额可为某个 Claude 模型自己的每周限额单独设阈值（名称与账号卡片上显示的一致）；只写名称不写数字时使用每周阈值。所需改善幅度可防止两个都接近阈值的账号来回切换。"
           }
         }
       }
@@ -1728,6 +1898,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助功能权限仅用于改进媒体和亮度提示，不会收集或分享任何数据。"
+          }
+        }
+      }
+    },
+    "Active" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前"
           }
         }
       }
@@ -2240,6 +2420,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高级"
+          }
+        }
+      }
+    },
+    "AI Accounts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 账号"
           }
         }
       }
@@ -2971,6 +3161,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自动滚动到下一个日程"
+          }
+        }
+      }
+    },
+    "Auto-switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动切换"
+          }
+        }
+      }
+    },
+    "Auto-switch Claude accounts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动切换 Claude 账号"
+          }
+        }
+      }
+    },
+    "Auto-switch Codex accounts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动切换 Codex 账号"
+          }
+        }
+      }
+    },
+    "Auto-switched Claude to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude 已自动切换到 %@"
+          }
+        }
+      }
+    },
+    "Auto-switched Codex to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 已自动切换到 %@"
           }
         }
       }
@@ -4780,6 +5020,26 @@
         }
       }
     },
+    "ChatGPT (Codex) only reads its login when it starts, so it has to restart to use the new account. Running codex command-line sessions also need a restart." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChatGPT（Codex）只在启动时读取登录信息，所以需要重启才会使用新账号。正在运行的 codex 命令行会话也需要重启。"
+          }
+        }
+      }
+    },
+    "ChatGPT will quit and reopen with this account." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChatGPT 将退出并以此账号重新打开。"
+          }
+        }
+      }
+    },
     "Check for Updates…" : {
       "localizations" : {
         "ar" : {
@@ -5410,6 +5670,76 @@
         }
       }
     },
+    "Claude" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude"
+          }
+        }
+      }
+    },
+    "Claude Code CLI is not logged in. Run `claude` and log in first." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code CLI 尚未登录。请先运行 `claude` 并登录。"
+          }
+        }
+      }
+    },
+    "Claude Code CLI not logged in" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code CLI 未登录"
+          }
+        }
+      }
+    },
+    "Claude Code is refreshing its login. Try again in a few seconds." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code 正在刷新登录，请几秒后再试。"
+          }
+        }
+      }
+    },
+    "Claude did not quit, so its login was not changed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude 没有退出，因此其登录未更改。"
+          }
+        }
+      }
+    },
+    "Claude model limits" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude 模型限额"
+          }
+        }
+      }
+    },
+    "Claude will quit and reopen with this account. Conversations and settings stay as they are." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude 将退出并以此账号重新打开。对话和设置保持不变。"
+          }
+        }
+      }
+    },
     "Clear slot" : {
       "localizations" : {
         "ar" : {
@@ -5506,6 +5836,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "清空槽位"
+          }
+        }
+      }
+    },
+    "Click + to save the Claude Code login that is active now. Log in with your next account and save it again." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击 + 保存当前的 Claude Code 登录。然后登录下一个账号，再保存一次。"
+          }
+        }
+      }
+    },
+    "Click + to save the Codex login that is active now. Log in with your next account and save it again." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击 + 保存当前的 Codex 登录。然后登录下一个账号，再保存一次。"
           }
         }
       }
@@ -5806,6 +6156,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刘海关闭时"
+          }
+        }
+      }
+    },
+    "Codex" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex"
+          }
+        }
+      }
+    },
+    "Codex is not logged in with a ChatGPT account." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 未使用 ChatGPT 账号登录。"
+          }
+        }
+      }
+    },
+    "Codex keeps its login in the system keyring. Set cli_auth_credentials_store = \"file\" in ~/.codex/config.toml and log in again." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 把登录信息存在系统钥匙串中。请在 ~/.codex/config.toml 中设置 cli_auth_credentials_store = \"file\" 后重新登录。"
+          }
+        }
+      }
+    },
+    "Codex not logged in" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 未登录"
           }
         }
       }
@@ -6284,6 +6674,16 @@
         }
       }
     },
+    "Cooldown after a switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换后冷却时间"
+          }
+        }
+      }
+    },
     "Copy" : {
       "comment" : "Shelf context menu",
       "localizations" : {
@@ -6506,6 +6906,26 @@
         }
       }
     },
+    "Could not read quota" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取额度"
+          }
+        }
+      }
+    },
+    "Could not tell which account the current login belongs to." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法判断当前登录属于哪个账号。"
+          }
+        }
+      }
+    },
     "Create PDF" : {
       "comment" : "Shelf context menu",
       "localizations" : {
@@ -6513,6 +6933,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "创建 PDF"
+          }
+        }
+      }
+    },
+    "Current login %@ is not saved" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前登录 %@ 尚未保存"
+          }
+        }
+      }
+    },
+    "Current: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前：%@"
           }
         }
       }
@@ -7525,6 +7965,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "描述"
+          }
+        }
+      }
+    },
+    "Desktop app switching has not been verified on this Mac yet." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "桌面 App 切换尚未在这台 Mac 上验证。"
           }
         }
       }
@@ -9505,6 +9955,16 @@
         }
       }
     },
+    "Exclude from Auto-switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不参与自动切换"
+          }
+        }
+      }
+    },
     "Expanded drag detection area" : {
       "localizations" : {
         "ar" : {
@@ -9802,6 +10262,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "扩展"
+          }
+        }
+      }
+    },
+    "Fable=40, Opus=60" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fable=40, Opus=60"
           }
         }
       }
@@ -12224,6 +12694,16 @@
         }
       }
     },
+    "Include in Auto-switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "参与自动切换"
+          }
+        }
+      }
+    },
     "Inline" : {
       "localizations" : {
         "ar" : {
@@ -12320,6 +12800,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "内嵌"
+          }
+        }
+      }
+    },
+    "Install and log in to the Claude Code CLI, then click + to save the account. Repeat for each account." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装并登录 Claude Code CLI，然后点击 + 保存账号。每个账号重复一次。"
           }
         }
       }
@@ -12421,6 +12911,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "已安装扩展"
+          }
+        }
+      }
+    },
+    "Its saved login is deleted from Boring Notch. The account itself and the app you are logged in to are not affected." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将从 Boring Notch 中删除保存的登录信息。账号本身和当前已登录的 App 不受影响。"
           }
         }
       }
@@ -12547,12 +13047,42 @@
         }
       }
     },
+    "Leave empty to show the email address." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "留空则显示邮箱地址。"
+          }
+        }
+      }
+    },
     "Loading lyrics…" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在加载歌词…"
+          }
+        }
+      }
+    },
+    "Log in to ChatGPT (Codex), then click + to save the account." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录 ChatGPT（Codex），然后点击 + 保存账号。"
+          }
+        }
+      }
+    },
+    "Login expired; log in again and re-save" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录已过期，请重新登录并再次保存"
           }
         }
       }
@@ -14622,6 +15152,36 @@
         }
       }
     },
+    "Most quota left" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩余额度最多"
+          }
+        }
+      }
+    },
+    "Move Left" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左移"
+          }
+        }
+      }
+    },
+    "Move Right" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右移"
+          }
+        }
+      }
+    },
     "Music Source" : {
       "localizations" : {
         "ar" : {
@@ -15022,6 +15582,16 @@
         }
       }
     },
+    "Network error" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络错误"
+          }
+        }
+      }
+    },
     "Never hide" : {
       "localizations" : {
         "ar" : {
@@ -15140,6 +15710,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无操作"
+          }
+        }
+      }
+    },
+    "No CLI login; quota unavailable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有 CLI 登录，无法读取额度"
           }
         }
       }
@@ -15677,6 +16257,16 @@
         }
       }
     },
+    "No reset card available" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用的重置卡"
+          }
+        }
+      }
+    },
     "Not charging" : {
       "comment" : "Battery status",
       "localizations" : {
@@ -16184,6 +16774,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刘海尺寸"
+          }
+        }
+      }
+    },
+    "Nothing to reset; the card was kept" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无需重置，重置卡未消耗"
           }
         }
       }
@@ -17745,12 +18345,52 @@
         }
       }
     },
+    "Rate limited; retrying later" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求过于频繁，稍后重试"
+          }
+        }
+      }
+    },
     "Recommended Applications" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "推荐的应用程序"
+          }
+        }
+      }
+    },
+    "Redeem" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换"
+          }
+        }
+      }
+    },
+    "Redeem a reset card?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换一张重置卡？"
+          }
+        }
+      }
+    },
+    "Redeem a Reset Card…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换重置卡…"
           }
         }
       }
@@ -18166,6 +18806,26 @@
         }
       }
     },
+    "Remove %@?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 %@？"
+          }
+        }
+      }
+    },
+    "Remove Account…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除账号…"
+          }
+        }
+      }
+    },
     "Remove Background" : {
       "comment" : "Shelf context menu",
       "localizations" : {
@@ -18288,12 +18948,42 @@
         }
       }
     },
+    "Rename %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重命名 %@"
+          }
+        }
+      }
+    },
     "Rename File" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新命名文件"
+          }
+        }
+      }
+    },
+    "Rename…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重命名…"
+          }
+        }
+      }
+    },
+    "Reopen Claude after switching" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换后重新打开 Claude"
           }
         }
       }
@@ -18609,6 +19299,16 @@
         }
       }
     },
+    "Required improvement" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所需改善幅度"
+          }
+        }
+      }
+    },
     "Requires a third-party client with API plugin enabled." : {
       "comment" : "Music source description",
       "localizations" : {
@@ -18616,6 +19316,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要安装第三方客户端并开启其 API 插件。"
+          }
+        }
+      }
+    },
+    "Reset cards ×%lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置卡 ×%lld"
+          }
+        }
+      }
+    },
+    "Reset cards ×%lld · expires in %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置卡 ×%lld · %@后过期"
+          }
+        }
+      }
+    },
+    "Reset outcome unknown; check usage before trying again" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置结果未知，请先查看额度再重试"
+          }
+        }
+      }
+    },
+    "Reset redeemed for %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已为 %@ 兑换重置"
           }
         }
       }
@@ -18921,6 +19661,26 @@
         }
       }
     },
+    "Restart ChatGPT after switching" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换后重启 ChatGPT"
+          }
+        }
+      }
+    },
+    "Restart ChatGPT afterwards to use this account." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "之后需重启 ChatGPT 才会使用此账号。"
+          }
+        }
+      }
+    },
     "Running" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -19018,6 +19778,46 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "运行中"
+          }
+        }
+      }
+    },
+    "Same as threshold" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与阈值相同"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save the current login" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存当前登录"
+          }
+        }
+      }
+    },
+    "Saved the current login" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存当前登录"
           }
         }
       }
@@ -21587,6 +22387,16 @@
         }
       }
     },
+    "Soonest weekly reset first" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每周最早重置的优先"
+          }
+        }
+      }
+    },
     "Speed" : {
       "localizations" : {
         "ar" : {
@@ -21899,6 +22709,16 @@
         }
       }
     },
+    "Strategy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "策略"
+          }
+        }
+      }
+    },
     "Support Us" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -21996,6 +22816,86 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "支持我们"
+          }
+        }
+      }
+    },
+    "Switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换"
+          }
+        }
+      }
+    },
+    "Switch the Claude Code CLI login" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换 Claude Code CLI 登录"
+          }
+        }
+      }
+    },
+    "Switch the Claude desktop app login" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换 Claude 桌面 App 登录"
+          }
+        }
+      }
+    },
+    "Switch to %@?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换到 %@？"
+          }
+        }
+      }
+    },
+    "Switch to This Account" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换到此账号"
+          }
+        }
+      }
+    },
+    "Switched Claude to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude 已切换到 %@"
+          }
+        }
+      }
+    },
+    "Switched Codex to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 已切换到 %@"
+          }
+        }
+      }
+    },
+    "Switching only replaces the login. Conversations, Code sessions and settings stay as they are. The desktop app is quit while its login is replaced." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换只替换登录信息，对话、Code 会话和设置都保持不变。替换桌面 App 登录时会先退出该 App。"
           }
         }
       }
@@ -22210,6 +23110,36 @@
         }
       }
     },
+    "That card was already redeemed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这张卡已被兑换"
+          }
+        }
+      }
+    },
+    "The current Codex login is not saved yet. Add it first so it is not lost." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前 Codex 登录尚未保存。请先添加，以免丢失。"
+          }
+        }
+      }
+    },
+    "The earliest card expires %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最早的一张卡将于 %@ 过期。"
+          }
+        }
+      }
+    },
     "The file is not a valid image" : {
       "comment" : "Image processing error",
       "localizations" : {
@@ -22217,6 +23147,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "该文件不是有效的图像"
+          }
+        }
+      }
+    },
+    "The helper process is not responding." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "辅助进程没有响应。"
+          }
+        }
+      }
+    },
+    "The Keychain could not be read or written." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读写钥匙串。"
+          }
+        }
+      }
+    },
+    "The login changed during the switch. Try again." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换过程中登录发生了变化，请重试。"
+          }
+        }
+      }
+    },
+    "This account has no saved login for that app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此账号没有保存该 App 的登录信息。"
+          }
+        }
+      }
+    },
+    "This spends one banked reset to reset the usage limits of this account now." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这会消耗一张已有的重置卡，立即重置此账号的用量限额。"
+          }
+        }
+      }
+    },
+    "Threshold" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阈值"
+          }
+        }
+      }
+    },
+    "Thresholds" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阈值"
           }
         }
       }
@@ -22617,6 +23617,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示/隐藏速览："
+          }
+        }
+      }
+    },
+    "Token expired; waiting for the CLI to refresh it" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "令牌已过期，等待 CLI 刷新"
           }
         }
       }
@@ -23129,6 +24139,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未接电源"
+          }
+        }
+      }
+    },
+    "Updated %@ ago" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@前更新"
           }
         }
       }
@@ -23844,6 +24864,66 @@
         }
       }
     },
+    "Waiting for the first reading…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待首次读取…"
+          }
+        }
+      }
+    },
+    "Warm up idle accounts' five-hour window" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预热空闲账号的 5 小时窗口"
+          }
+        }
+      }
+    },
+    "Warming sends one short Haiku prompt for an idle account so its five-hour window starts early. It uses real subscription quota and is off by default." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预热会为空闲账号发送一条简短的 Haiku 提示，让它的 5 小时窗口提前开始计时。这会消耗真实的订阅额度，默认关闭。"
+          }
+        }
+      }
+    },
+    "Week" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "周"
+          }
+        }
+      }
+    },
+    "Weekly only" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅每周"
+          }
+        }
+      }
+    },
+    "Weekly window" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每周窗口"
+          }
+        }
+      }
+    },
     "Welcome" : {
       "localizations" : {
         "ar" : {
@@ -24251,6 +25331,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "窗口行为"
+          }
+        }
+      }
+    },
+    "Windows that trigger a switch" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触发切换的窗口"
           }
         }
       }

@@ -187,7 +187,9 @@ struct AIAccountRow: View {
                 .lineLimit(1)
                 .truncationMode(.middle)
             HStack(spacing: 4) {
-                if let plan = account.planLabel { AITag(text: plan, color: .white.opacity(0.7)) }
+                if let plan = account.planLabel {
+                    AITag(text: plan, color: account.planTier(manager.provider)?.color ?? .white.opacity(0.7))
+                }
                 if isActive && manager.provider == .claude { AITag(text: "CLI", color: .green) }
                 if isActive && manager.provider == .codex { AITag(text: String(localized: "Active"), color: .green) }
                 if isDesktopActive { AITag(text: "App", color: .green) }
@@ -378,6 +380,18 @@ struct AITag: View {
             .padding(.horizontal, 4).padding(.vertical, 1)
             .background(Capsule().fill(color.opacity(0.25)))
             .foregroundStyle(color)
+    }
+}
+
+extension AIPlanTier {
+    /// Metal colours, readable on the black notch.
+    var color: Color {
+        switch self {
+        case .iron: Color(red: 0.56, green: 0.60, blue: 0.64)
+        case .bronze: Color(red: 0.85, green: 0.55, blue: 0.30)
+        case .silver: Color(red: 0.86, green: 0.89, blue: 0.94)
+        case .gold: Color(red: 1.00, green: 0.80, blue: 0.24)
+        }
     }
 }
 

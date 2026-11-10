@@ -30,10 +30,30 @@ struct AIAccount: Codable, Identifiable, Hashable {
     var planLabel: String? {
         guard var plan = plan?.lowercased(), !plan.isEmpty else { return nil }
         for prefix in ["default_", "claude_"] where plan.hasPrefix(prefix) { plan.removeFirst(prefix.count) }
+        if plan == "prolite" { return "Pro Lite" }
         // "max_20x" → "Max 20x" (capitalize words, keep multipliers as they are)
         return plan.split(separator: "_").map { word in
             word.first?.isLetter == true ? word.prefix(1).uppercased() + word.dropFirst() : String(word)
         }.joined(separator: " ")
+    }
+
+    /// Price tier of the subscription, for the tag colour (iron < bronze < silver < gold).
+    /// "pro" means different things: Claude's entry paid plan, ChatGPT's top plan.
+    func planTier(_ provider: AIProvider) -> AIPlanTier? {
+        guard let plan = plan?.lowercased(), !plan.isEmpty else { return nil }
+        switch provider {
+        case .claude:
+            if plan.contains("20x") { return .gold }
+            if plan.contains("max") || plan.contains("5x") { return .silver }
+            if plan.contains("enterprise") { return .silver }
+            if plan.contains("pro") || plan.contains("team") || plan.contains("edu") { return .bronze }
+            return .iron
+        case .codex:
+            if plan == "prolite" || plan.contains("enterprise") { return .silver }
+            if plan == "pro" { return .gold }
+            if plan == "free" || plan == "go" { return .iron }
+            return .bronze   // plus, team, business, edu…
+        }
     }
 
     /// Short plan / organization label shown under the name.
@@ -44,6 +64,11 @@ struct AIAccount: Codable, Identifiable, Hashable {
         }
         return organizationName
     }
+}
+
+enum AIPlanTier: Int, Comparable {
+    case iron, bronze, silver, gold
+    static func < (a: Self, b: Self) -> Bool { a.rawValue < b.rawValue }
 }
 
 struct AIUsageWindow: Codable, Hashable {

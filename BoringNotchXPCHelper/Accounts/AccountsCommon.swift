@@ -271,9 +271,12 @@ extension Dictionary where Key == String, Value == Any {
         return value
     }
     func number(_ key: String) -> Double? {
-        if self[key] is Bool { return nil }
-        if let value = self[key] as? Double, value.isFinite { return value }
-        if let value = self[key] as? Int { return Double(value) }
+        // JSONSerialization yields NSNumber, and `is Bool` is true for NSNumber 0 and 1, which would drop
+        // a 0 % window. Only a real JSON true/false (a CFBoolean) is rejected.
+        if let value = self[key] as? NSNumber {
+            if CFGetTypeID(value) == CFBooleanGetTypeID() { return nil }
+            return value.doubleValue.isFinite ? value.doubleValue : nil
+        }
         if let value = self[key] as? String, let parsed = Double(value), parsed.isFinite { return parsed }
         return nil
     }

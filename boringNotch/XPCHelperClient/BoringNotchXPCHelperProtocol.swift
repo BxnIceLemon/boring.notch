@@ -20,5 +20,7 @@ import Foundation
     func isScreenBrightnessAvailable(with reply: @escaping (Bool) -> Void)
     func currentScreenBrightness(with reply: @escaping (NSNumber?) -> Void)
     func setScreenBrightness(_ value: Float, with reply: @escaping (Bool) -> Void)
+    // AI account manager (Claude / Codex). JSON request in, JSON reply out; see AccountsService.
+    func accountsRequest(_ request: Data, with reply: @escaping (Data) -> Void)
 }
 

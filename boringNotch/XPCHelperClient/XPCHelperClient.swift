@@ -243,6 +243,21 @@ final class XPCHelperClient: NSObject {
     }
 }
 
+// MARK: - AI account manager
+extension XPCHelperClient {
+    /// Sends one JSON request to the helper's account manager and returns its JSON reply.
+    nonisolated func accountsRequest(_ request: Data) async -> Data? {
+        do {
+            let service = await MainActor.run { ensureRemoteService() }
+            return try await service.withContinuation { service, continuation in
+                service.accountsRequest(request) { continuation.resume(returning: $0) }
+            }
+        } catch {
+            return nil
+        }
+    }
+}
+
 extension Notification.Name {
     static let accessibilityAuthorizationChanged = Notification.Name("accessibilityAuthorizationChanged")
 }

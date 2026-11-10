@@ -5740,6 +5740,16 @@
         }
       }
     },
+    "Claude Code CLI followed the app to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code CLI 已跟随 App 切换到 %@"
+          }
+        }
+      }
+    },
     "Claude Code CLI is not logged in. Run `claude` and log in first." : {
       "localizations" : {
         "zh-Hans" : {
@@ -5896,6 +5906,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "清空槽位"
+          }
+        }
+      }
+    },
+    "CLI follows the desktop app's account" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CLI 跟随桌面 App 的账号"
           }
         }
       }
@@ -25330,6 +25350,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "更新内容"
+          }
+        }
+      }
+    },
+    "When you sign in to another saved account in the Claude app, the CLI switches to it as well (within about a minute)." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Claude App 里登录另一个已保存的账号后，CLI 也会切换到这个账号（约一分钟内）。"
           }
         }
       }

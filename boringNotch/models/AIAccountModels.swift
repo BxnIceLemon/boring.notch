@@ -163,6 +163,10 @@ extension Defaults.Keys {
     static let aiClaudeSwitchCLI = Key<Bool>("aiClaudeSwitchCLI", default: true)
     static let aiClaudeSwitchDesktop = Key<Bool>("aiClaudeSwitchDesktop", default: true)
     static let aiRelaunchClaude = Key<Bool>("aiRelaunchClaude", default: true)
+    /// When the Claude desktop app signs in to another saved account, switch the CLI to it too.
+    static let aiClaudeCLIFollowsDesktop = Key<Bool>("aiClaudeCLIFollowsDesktop", default: true)
+    /// The saved account the desktop app was last seen on ("" = none / not saved).
+    static let aiClaudeLastDesktopId = Key<String>("aiClaudeLastDesktopId", default: "")
     static let aiRelaunchChatGPT = Key<Bool>("aiRelaunchChatGPT", default: true)
     static let aiWarmupClaude = Key<Bool>("aiWarmupClaude", default: false)
 }

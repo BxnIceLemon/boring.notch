@@ -90,7 +90,9 @@ final class AIAccountsManager: ObservableObject {
 
     // MARK: - Status
 
-    func refreshStatus() async {
+    /// `followDesktop`: the Claude CLI may follow an account change in the desktop app. Switches
+    /// made here pass false, so the settings of that switch (CLI on/off) are respected.
+    func refreshStatus(followDesktop: Bool = true) async {
         guard let result = try? await call("status") else { return }
         lastStatus = Date()
         accounts = decode([AIAccount].self, result["accounts"]) ?? []
@@ -113,6 +115,34 @@ final class AIAccountsManager: ObservableObject {
         let ids = Set(accounts.map(\.id))
         usage = usage.filter { ids.contains($0.key) }
         statusLoaded = true
+        if provider == .claude { await noteDesktopAccount(follow: followDesktop) }
+    }
+
+    // MARK: - CLI follows the desktop app
+
+    /// The desktop app's login can't be produced from the CLI's, but the other way round is cheap:
+    /// switching the CLI needs no restart. So when the app moves to another saved account (the user
+    /// signed in to it there), the CLI follows. Only a change triggers it, so a CLI switch made on
+    /// purpose afterwards stays.
+    private func noteDesktopAccount(follow: Bool) async {
+        let current = desktopActiveId ?? ""
+        let previous = Defaults[.aiClaudeLastDesktopId]
+        guard current != previous else { return }
+        guard follow, !current.isEmpty, Defaults[.aiClaudeCLIFollowsDesktop],
+              current != activeId, let target = accounts.first(where: { $0.id == current }) else {
+            Defaults[.aiClaudeLastDesktopId] = current
+            return
+        }
+        guard !isWorking else { return }   // busy: try again on the next status refresh
+        Defaults[.aiClaudeLastDesktopId] = current
+        await perform {
+            let result = try await self.call("switch", ["id": target.id, "cli": true, "desktop": false, "relaunchDesktop": false])
+            guard result["cliSwitched"] as? Bool == true else { return }
+            self.showBanner(String(localized: "Claude Code CLI followed the app to \(target.displayName)", comment: "AI accounts banner"))
+            self.lastSwitch = Date()
+            await self.refreshStatus(followDesktop: false)
+            self.usage[target.id, default: AIUsageState()].nextPoll = Date()
+        }
     }
 
     // MARK: - Usage polling
@@ -230,7 +260,7 @@ final class AIAccountsManager: ObservableObject {
                 self.showBanner(message)
             }
             self.lastSwitch = Date()
-            await self.refreshStatus()
+            await self.refreshStatus(followDesktop: false)
             self.usage[account.id, default: AIUsageState()].nextPoll = Date()
         }
     }

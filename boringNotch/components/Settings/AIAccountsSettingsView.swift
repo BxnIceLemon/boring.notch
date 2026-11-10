@@ -23,6 +23,7 @@ struct AIAccountsSettings: View {
     @Default(.aiClaudeSwitchCLI) private var switchCLI
     @Default(.aiClaudeSwitchDesktop) private var switchDesktop
     @Default(.aiRelaunchClaude) private var relaunchClaude
+    @Default(.aiClaudeCLIFollowsDesktop) private var cliFollowsDesktop
     @Default(.aiRelaunchChatGPT) private var relaunchChatGPT
     @Default(.aiWarmupClaude) private var warmup
     @ObservedObject private var claude = AIAccountsManager.claude
@@ -75,12 +76,15 @@ struct AIAccountsSettings: View {
                     .disabled(!claude.desktopInstalled)
                 Toggle("Reopen Claude after switching", isOn: $relaunchClaude)
                     .disabled(!switchDesktop || !claude.desktopInstalled)
+                Toggle("CLI follows the desktop app's account", isOn: $cliFollowsDesktop)
+                    .disabled(!claude.desktopInstalled)
                 Toggle("Warm up idle accounts' five-hour window", isOn: $warmup)
             } header: {
                 Text("Claude")
             } footer: {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Switching only replaces the login. Conversations, Code sessions and settings stay as they are. The desktop app is quit while its login is replaced.")
+                    Text("When you sign in to another saved account in the Claude app, the CLI switches to it as well (within about a minute).")
                     if claude.desktopInstalled && !claude.desktopLoginVerified {
                         Text("Desktop app switching has not been verified on this Mac yet.").foregroundStyle(.orange)
                     }

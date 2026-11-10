@@ -49,6 +49,8 @@ struct AIAccountsPage: View {
             Group {
                 if let banner = manager.banner {
                     Text(banner).foregroundStyle(.white)
+                } else if manager.pendingLoginURL != nil {
+                    Text("Waiting for the sign-in in your browser…").foregroundStyle(.white)
                 } else if let email = manager.unmanagedEmail {
                     Text("Current login \(email) is not saved").foregroundStyle(.orange)
                 } else if let active = manager.accounts.first(where: { $0.id == manager.activeId }) {
@@ -60,8 +62,12 @@ struct AIAccountsPage: View {
             .font(.caption)
             .lineLimit(1)
             .truncationMode(.middle)
+            if manager.banner == nil, manager.pendingLoginURL == nil, manager.unmanagedEmail != nil {
+                AICapsuleButton(title: String(localized: "Save")) { Task { await manager.addCurrent() } }
+                    .help(Text("Save the current login"))
+            }
             Spacer(minLength: 4)
-            if manager.isWorking { ProgressView().controlSize(.mini) }
+            if manager.isWorking || manager.pendingLoginURL != nil { ProgressView().controlSize(.mini) }
             Toggle(isOn: autoSwitch) { Text("Auto-switch").font(.caption).foregroundStyle(.gray) }
                 .toggleStyle(.switch)
                 .controlSize(.mini)
@@ -69,10 +75,30 @@ struct AIAccountsPage: View {
             HoverButton(icon: "arrow.clockwise", iconColor: .gray, scale: .small) {
                 Task { await manager.refreshAll() }
             }
-            HoverButton(icon: "plus", iconColor: .gray, scale: .small) {
-                Task { await manager.addCurrent() }
+            switch manager.provider {
+            case .claude:
+                HoverButton(icon: "plus", iconColor: .gray, scale: .small) {
+                    Task { await manager.addCurrent() }
+                }
+                .help(Text("Save the current login"))
+            case .codex:
+                if let url = manager.pendingLoginURL {
+                    HoverButton(icon: "link", iconColor: .gray, scale: .small) {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(url.absoluteString, forType: .string)
+                    }
+                    .help(Text("Copy the sign-in link"))
+                    HoverButton(icon: "xmark", iconColor: .gray, scale: .small) {
+                        Task { await manager.cancelCodexLogin() }
+                    }
+                    .help(Text("Cancel the sign-in"))
+                } else {
+                    HoverButton(icon: "plus", iconColor: .gray, scale: .small) {
+                        Task { await AIAccountActions.addCodexAccount(manager: manager) }
+                    }
+                    .help(Text("Add an account"))
+                }
             }
-            .help(Text("Save the current login"))
         }
     }
 
@@ -107,9 +133,7 @@ struct AIAccountsPage: View {
                 if !manager.usesFileStore {
                     Text("Codex keeps its login in the system keyring. Set cli_auth_credentials_store = \"file\" in ~/.codex/config.toml and log in again.")
                 } else {
-                    Text(manager.loggedIn
-                         ? "Click + to save the Codex login that is active now. Log in with your next account and save it again."
-                         : "Log in to ChatGPT (Codex), then click + to save the account.")
+                    Text("Click + and sign in to the account to add in your browser. ChatGPT stays signed in as it is. Don't sign out in ChatGPT to add an account: signing out revokes that account's saved login.")
                 }
             }
         }
@@ -335,6 +359,20 @@ struct AIUsageRow: View {
     }
 }
 
+struct AICapsuleButton: View {
+    let title: String
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(title).font(.caption2.weight(.semibold))
+                .padding(.horizontal, 8).padding(.vertical, 2)
+                .background(Capsule().fill(Color.effectiveAccent.opacity(0.85)))
+                .foregroundStyle(.white)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct AITag: View {
     let text: String
     let color: Color
@@ -370,6 +408,26 @@ enum AIAccountActions {
         if let message, !confirm(title: String(localized: "Switch to \(account.displayName)?"), message: message,
                                  button: String(localized: "Switch")) { return }
         await manager.switchTo(account)
+    }
+
+    /// Adds a Codex account through a separate browser sign-in; the current login is not touched.
+    static func addCodexAccount(manager: AIAccountsManager) async {
+        guard let url = await manager.beginCodexLogin() else { return }
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Sign in to the account to add")
+        alert.informativeText = String(localized: "Sign in to the ChatGPT account you want to add in your browser. ChatGPT itself stays signed in as it is.\n\nIf your browser is already signed in to another ChatGPT account, copy the link and open it in a private window.")
+        alert.addButton(withTitle: String(localized: "Open in Browser"))
+        alert.addButton(withTitle: String(localized: "Copy Link"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        switch run(alert) {
+        case .alertFirstButtonReturn:
+            NSWorkspace.shared.open(url)
+        case .alertSecondButtonReturn:
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(url.absoluteString, forType: .string)
+        default:
+            await manager.cancelCodexLogin()
+        }
     }
 
     static func remove(_ account: AIAccount, manager: AIAccountsManager) {

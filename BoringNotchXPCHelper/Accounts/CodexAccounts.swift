@@ -54,26 +54,60 @@ final class CodexAccounts {
         guard let live = try readLive(), let who = Self.identity(of: live) else {
             throw AccountsError("codex_not_logged_in", "Codex is not logged in with a ChatGPT account.")
         }
-        return try store.withLock {
+        return try save(live, who).account
+    }
+
+    /// Stores `auth` as the saved login of the matching account (new or existing).
+    func save(_ auth: JSONObject, _ who: Identity) throws -> (account: JSONObject, existed: Bool) {
+        try store.withLock {
             var accounts = try store.accounts()
-            var account = accounts.first { matches($0, who) } ?? SavedAccount(email: who.email)
+            let existing = accounts.first { matches($0, who) }
+            var account = existing ?? SavedAccount(email: who.email)
             account.email = who.email
             account.accountUuid = who.accountId
             account.plan = who.plan
-            try store.writeJSON(account.id, "auth.json", live)
+            try store.writeJSON(account.id, "auth.json", auth)
             if let index = accounts.firstIndex(where: { $0.id == account.id }) { accounts[index] = account } else { accounts.append(account) }
             try store.save(accounts)
-            return account.json
+            return (account.json, existing != nil)
         }
     }
 
     /// Replaces auth.json with the target's saved login. Returns whether anything changed.
-    /// Restarting ChatGPT.app is a separate request so the app decides (auto-switch vs manual).
-    func switchTo(_ id: String) throws -> JSONObject {
+    /// With `restartApp`, a running ChatGPT is quit *before* auth.json is replaced (so it cannot
+    /// write its in-memory login back over the new one on exit) and reopened afterwards.
+    func switchTo(_ id: String, restartApp: Bool = false) throws -> JSONObject {
         guard usesFileStore() else {
             throw AccountsError("codex_keyring_store", "Codex does not use its file credential store.")
         }
-        return try store.withLock {
+        let target = try store.account(id)
+        let live = (try? readLive()) ?? nil
+        let liveIdentity = live.flatMap(Self.identity(of:))
+        if matches(target, liveIdentity) { return ["switched": false] }
+        // Refuse before quitting anything (replaceLogin checks again under the lock).
+        if live != nil, !(try store.accounts()).contains(where: { matches($0, liveIdentity) }) {
+            throw AccountsError("codex_unmanaged", "The current Codex login is not saved yet. Add it first so it is not lost.")
+        }
+
+        let wasRunning = restartApp && AppRelauncher.isRunning(AccountPaths.chatGPTBundleID)
+        if wasRunning, !AppRelauncher.quit(AccountPaths.chatGPTBundleID) {
+            throw AccountsError("app_did_not_quit", "ChatGPT did not quit, so its login was not changed.")
+        }
+        do {
+            var result = try replaceLogin(id)
+            if wasRunning {
+                AppRelauncher.launch(AccountPaths.chatGPTBundleID)
+                result["restarted"] = true
+            }
+            return result
+        } catch {
+            if wasRunning { AppRelauncher.launch(AccountPaths.chatGPTBundleID) }   // reopen on the old login
+            throw error
+        }
+    }
+
+    private func replaceLogin(_ id: String) throws -> JSONObject {
+        try store.withLock {
             let target = try store.account(id)
             guard let targetAuth = try store.readJSON(id, "auth.json") else {
                 throw AccountsError("missing_credentials", "This account has no saved Codex login.")

@@ -2023,6 +2023,16 @@
         }
       }
     },
+    "Add an account" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加账号"
+          }
+        }
+      }
+    },
     "Add manually" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2220,6 +2230,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "添加新的可视化器"
+          }
+        }
+      }
+    },
+    "Added %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加 %@"
           }
         }
       }
@@ -2850,6 +2870,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "总是显示标签页"
+          }
+        }
+      }
+    },
+    "Another Codex sign-in is already running. Finish or close it first." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已有另一个 Codex 登录正在进行，请先完成或关闭它。"
           }
         }
       }
@@ -4709,6 +4739,16 @@
         }
       }
     },
+    "Cancel the sign-in" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消登录"
+          }
+        }
+      }
+    },
     "Change media with horizontal gestures" : {
       "localizations" : {
         "ar" : {
@@ -5026,6 +5066,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ChatGPT（Codex）只在启动时读取登录信息，所以需要重启才会使用新账号。正在运行的 codex 命令行会话也需要重启。"
+          }
+        }
+      }
+    },
+    "ChatGPT did not quit, so its login was not changed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChatGPT 没有退出，因此其登录未更改。"
           }
         }
       }
@@ -5840,22 +5890,22 @@
         }
       }
     },
+    "Click + and sign in to the account to add in your browser. ChatGPT stays signed in as it is. Don't sign out in ChatGPT to add an account: signing out revokes that account's saved login." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击 +，在浏览器中登录要添加的账号，ChatGPT 当前的登录保持不变。不要通过在 ChatGPT 里退出登录来添加账号：退出会注销该账号已保存的登录。"
+          }
+        }
+      }
+    },
     "Click + to save the Claude Code login that is active now. Log in with your next account and save it again." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "点击 + 保存当前的 Claude Code 登录。然后登录下一个账号，再保存一次。"
-          }
-        }
-      }
-    },
-    "Click + to save the Codex login that is active now. Log in with your next account and save it again." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "点击 + 保存当前的 Codex 登录。然后登录下一个账号，再保存一次。"
           }
         }
       }
@@ -6795,6 +6845,16 @@
         }
       }
     },
+    "Copy Link" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制链接"
+          }
+        }
+      }
+    },
     "Copy Path" : {
       "comment" : "Shelf context menu",
       "localizations" : {
@@ -6802,6 +6862,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拷贝路径"
+          }
+        }
+      }
+    },
+    "Copy the sign-in link" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制登录链接"
           }
         }
       }
@@ -6902,6 +6972,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圆角缩放"
+          }
+        }
+      }
+    },
+    "Could not find the codex command that comes with ChatGPT." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到 ChatGPT 自带的 codex 命令。"
           }
         }
       }
@@ -13067,16 +13147,6 @@
         }
       }
     },
-    "Log in to ChatGPT (Codex), then click + to save the account." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录 ChatGPT（Codex），然后点击 + 保存账号。"
-          }
-        }
-      }
-    },
     "Login expired; log in again and re-save" : {
       "localizations" : {
         "zh-Hans" : {
@@ -16916,6 +16986,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "打开日历设置"
+          }
+        }
+      }
+    },
+    "Open in Browser" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在浏览器中打开"
           }
         }
       }
@@ -21976,6 +22056,26 @@
         }
       }
     },
+    "Sign in to the account to add" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录要添加的账号"
+          }
+        }
+      }
+    },
+    "Sign in to the ChatGPT account you want to add in your browser. ChatGPT itself stays signed in as it is.\n\nIf your browser is already signed in to another ChatGPT account, copy the link and open it in a private window." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在浏览器中登录要添加的 ChatGPT 账号，ChatGPT 本身的登录保持不变。\n\n如果浏览器已登录了别的 ChatGPT 账号，请复制链接，在隐私窗口中打开。"
+          }
+        }
+      }
+    },
     "Slider color" : {
       "localizations" : {
         "ar" : {
@@ -23181,6 +23281,26 @@
         }
       }
     },
+    "The sign-in did not complete." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录没有完成。"
+          }
+        }
+      }
+    },
+    "The sign-in took too long and was cancelled." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录超时，已取消。"
+          }
+        }
+      }
+    },
     "This account has no saved login for that app." : {
       "localizations" : {
         "zh-Hans" : {
@@ -24163,6 +24283,16 @@
         }
       }
     },
+    "Updated the saved login of %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %@ 保存的登录"
+          }
+        }
+      }
+    },
     "Upgrade to Pro" : {
       "localizations" : {
         "ar" : {
@@ -24880,6 +25010,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在等待首次读取…"
+          }
+        }
+      }
+    },
+    "Waiting for the sign-in in your browser…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待浏览器中的登录…"
           }
         }
       }

@@ -42,11 +42,15 @@ final class AIAccountsManager: ObservableObject {
     @Published private(set) var isWorking = false
     @Published private(set) var banner: String?
     @Published private(set) var lastSwitch: Date?
+    /// Codex: a separate browser sign-in for adding an account is waiting (its sign-in link).
+    @Published private(set) var pendingLoginURL: URL?
 
     private var loopTask: Task<Void, Never>?
     private var lastStatus: Date = .distantPast
     private var lastWarmupCheck: Date = .distantPast
     private var bannerTask: Task<Void, Never>?
+    private var loginId: String?
+    private var loginTask: Task<Void, Never>?
 
     private init(_ provider: AIProvider) {
         self.provider = provider
@@ -205,7 +209,8 @@ final class AIAccountsManager: ObservableObject {
                     ? String(localized: "Auto-switched Claude to \(account.displayName)", comment: "AI accounts banner")
                     : String(localized: "Switched Claude to \(account.displayName)", comment: "AI accounts banner"))
             case .codex:
-                let result = try await self.call("switch", ["id": account.id])
+                // The helper quits ChatGPT before replacing auth.json and reopens it afterwards.
+                let result = try await self.call("switch", ["id": account.id, "restartApp": Defaults[.aiRelaunchChatGPT]])
                 guard result["switched"] as? Bool == true else {
                     self.showBanner(String(localized: "\(account.displayName) is already in use", comment: "AI accounts banner"))
                     return
@@ -213,13 +218,10 @@ final class AIAccountsManager: ObservableObject {
                 var message = automatic
                     ? String(localized: "Auto-switched Codex to \(account.displayName)", comment: "AI accounts banner")
                     : String(localized: "Switched Codex to \(account.displayName)", comment: "AI accounts banner")
-                if result["appRunning"] as? Bool == true {
-                    if Defaults[.aiRelaunchChatGPT] {
-                        _ = try? await self.call("restartApp")
-                        message += String(localized: " · ChatGPT restarted", comment: "AI accounts banner suffix")
-                    } else {
-                        message += String(localized: " · restart ChatGPT to use it", comment: "AI accounts banner suffix")
-                    }
+                if result["restarted"] as? Bool == true {
+                    message += String(localized: " · ChatGPT restarted", comment: "AI accounts banner suffix")
+                } else if result["appRunning"] as? Bool == true {
+                    message += String(localized: " · restart ChatGPT to use it", comment: "AI accounts banner suffix")
                 } else if result["codexCLIRunning"] as? Bool == true {
                     message += String(localized: " · restart running codex sessions", comment: "AI accounts banner suffix")
                 }
@@ -229,6 +231,66 @@ final class AIAccountsManager: ObservableObject {
             await self.refreshStatus()
             self.usage[account.id, default: AIUsageState()].nextPoll = Date()
         }
+    }
+
+    // MARK: - Adding a Codex account
+
+    /// Starts a sign-in in a private CODEX_HOME and returns its link. Signing out in ChatGPT would
+    /// revoke the current account's tokens, so accounts are added this way instead.
+    func beginCodexLogin() async -> URL? {
+        guard provider == .codex else { return nil }
+        if let pendingLoginURL { return pendingLoginURL }
+        do {
+            let result = try await call("loginStart")
+            guard let id = result["loginId"] as? String, let text = result["url"] as? String, let url = URL(string: text) else {
+                return nil
+            }
+            loginId = id
+            pendingLoginURL = url
+            loginTask = Task { [weak self] in await self?.waitForLogin(id) }
+            return url
+        } catch {
+            showBanner((error as? AIAccountsError)?.message ?? error.localizedDescription)
+            return nil
+        }
+    }
+
+    func cancelCodexLogin() async {
+        guard let id = loginId else { return }
+        endLogin()
+        _ = try? await call("loginCancel", ["loginId": id])
+    }
+
+    private func waitForLogin(_ id: String) async {
+        while !Task.isCancelled, loginId == id {
+            try? await Task.sleep(for: .seconds(2))
+            guard loginId == id, let result = try? await call("loginPoll", ["loginId": id]) else { continue }
+            switch result["state"] as? String {
+            case "pending": continue
+            case "done":
+                endLogin()
+                await refreshStatus()
+                let account = (result["account"] as? [String: Any]).flatMap { decode(AIAccount.self, $0) }
+                if let account { usage[account.id, default: AIUsageState()].nextPoll = .distantPast }
+                await pollDueAccounts(limit: 1)
+                let name = account?.displayName ?? ""
+                showBanner(result["alreadySaved"] as? Bool == true
+                    ? String(localized: "Updated the saved login of \(name)", comment: "AI accounts banner")
+                    : String(localized: "Added \(name)", comment: "AI accounts banner"))
+            default:
+                endLogin()
+                let code = result["code"] as? String ?? "codex_login_failed"
+                showBanner(AIAccountsError.localizedMessage(code: code, fallback: result["message"] as? String))
+            }
+            return
+        }
+    }
+
+    private func endLogin() {
+        loginId = nil
+        pendingLoginURL = nil
+        loginTask?.cancel()
+        loginTask = nil
     }
 
     func remove(_ account: AIAccount) async {
@@ -454,6 +516,11 @@ struct AIAccountsError: Error {
         case "identity_unknown": return String(localized: "Could not tell which account the current login belongs to.")
         case "bad_claude_config": return String(localized: "~/.claude.json could not be read; nothing was changed.")
         case "keychain": return String(localized: "The Keychain could not be read or written.")
+        case "app_did_not_quit": return String(localized: "ChatGPT did not quit, so its login was not changed.")
+        case "codex_cli_missing": return String(localized: "Could not find the codex command that comes with ChatGPT.")
+        case "codex_login_port_busy": return String(localized: "Another Codex sign-in is already running. Finish or close it first.")
+        case "codex_login_timeout": return String(localized: "The sign-in took too long and was cancelled.")
+        case "codex_login_failed": return String(localized: "The sign-in did not complete.")
         default: return fallback ?? code
         }
     }

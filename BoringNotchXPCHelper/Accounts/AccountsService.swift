@@ -14,6 +14,7 @@ enum AccountsService {
     static let queue = DispatchQueue(label: "theboringteam.boringnotch.accounts")
     private static let claude = ClaudeAccounts()
     private static let codex = CodexAccounts()
+    private static let codexLogin = CodexLogin(accounts: codex)
 
     static func handle(_ request: Data, reply: @escaping (Data) -> Void) {
         queue.async {
@@ -54,7 +55,10 @@ enum AccountsService {
 
         case ("codex", "status"): return try codex.status()
         case ("codex", "addCurrent"): return try codex.addCurrent()
-        case ("codex", "switch"): return try codex.switchTo(try requireID())
+        case ("codex", "switch"): return try codex.switchTo(try requireID(), restartApp: request["restartApp"] as? Bool ?? false)
+        case ("codex", "loginStart"): return try codexLogin.start()
+        case ("codex", "loginPoll"): return try codexLogin.poll(request.string("loginId") ?? "")
+        case ("codex", "loginCancel"): codexLogin.cancel(request.string("loginId") ?? ""); return [:]
         case ("codex", "restartApp"): return codex.restartApp()
         case ("codex", "usage"): return try codex.usage(try requireID())
         case ("codex", "redeemReset"): return try codex.redeemReset(try requireID())

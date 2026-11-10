@@ -22,7 +22,13 @@ struct AccountsError: Error, CustomStringConvertible {
 typealias JSONObject = [String: Any]
 
 enum AccountPaths {
-    static var home: URL { FileManager.default.homeDirectoryForCurrentUser }
+    /// $HOME first, like Claude Code (os.homedir) and Codex, so all three agree on file locations.
+    static var home: URL {
+        if let path = ProcessInfo.processInfo.environment["HOME"], !path.isEmpty {
+            return URL(fileURLWithPath: path, isDirectory: true)
+        }
+        return FileManager.default.homeDirectoryForCurrentUser
+    }
 
     /// Our own account library. Directories 0700, files 0600.
     static var store: URL {

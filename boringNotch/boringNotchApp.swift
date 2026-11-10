@@ -436,6 +436,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         previousScreens = NSScreen.screens
+
+        // Claude / Codex account pages: usage polling and auto-switch run in the background.
+        AIAccountsManager.claude.start()
+        AIAccountsManager.codex.start()
     }
 
     func playWelcomeSound() {

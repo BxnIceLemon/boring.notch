@@ -1087,7 +1087,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld天%lld小时"
+            "value" : "%lld天%lld时"
           }
         }
       }
@@ -1097,7 +1097,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld小时%lld分"
+            "value" : "%lld时%lld分"
           }
         }
       }
@@ -15162,22 +15162,22 @@
         }
       }
     },
-    "Move Left" : {
+    "Move Down" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "左移"
+            "value" : "下移"
           }
         }
       }
     },
-    "Move Right" : {
+    "Move Up" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "右移"
+            "value" : "上移"
           }
         }
       }

@@ -86,10 +86,10 @@ struct AIAccountsPage: View {
         } else if manager.accounts.isEmpty {
             emptyState
         } else {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 8) {
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(spacing: 2) {
                     ForEach(manager.accounts) { account in
-                        AIAccountCard(manager: manager, account: account)
+                        AIAccountRow(manager: manager, account: account)
                     }
                 }
             }
@@ -119,9 +119,11 @@ struct AIAccountsPage: View {
     }
 }
 
-// MARK: - Account card
+// MARK: - Account row
 
-struct AIAccountCard: View {
+/// One line per account, like ccswap's pane: marker, name, a bar per quota window, Switch.
+/// Details that don't fit on the line (plan, per-model limits, last update) are in the tooltip.
+struct AIAccountRow: View {
     @ObservedObject var manager: AIAccountsManager
     let account: AIAccount
     @State private var hovering = false
@@ -129,71 +131,82 @@ struct AIAccountCard: View {
     private var state: AIUsageState? { manager.usage[account.id] }
     private var isActive: Bool { account.id == manager.activeId }
     private var isDesktopActive: Bool { manager.provider == .claude && account.id == manager.desktopActiveId }
+    private var canSwitch: Bool {
+        !isActive || (manager.provider == .claude && !isDesktopActive && manager.desktopInstalled)
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            header
-            if let subtitle = account.subtitle {
-                Text(subtitle).font(.caption2).foregroundStyle(.gray).lineLimit(1)
-            }
-            if let usage = state?.usage {
-                ForEach(usage.windows, id: \.key) { window in
-                    AIUsageRow(label: label(for: window.key), pct: window.pct, reset: window.resetDate)
-                }
-                ForEach((usage.models ?? []).prefix(2), id: \.name) { model in
-                    AIUsageRow(label: model.name, pct: model.pct, reset: model.resetDate)
-                }
-                if let credits = usage.resetCredits, credits.available > 0 {
-                    Text(resetCreditsText(credits)).font(.caption2).foregroundStyle(.gray).lineLimit(1)
-                }
-            } else if state?.error == nil {
-                Text("Waiting for the first reading…").font(.caption2).foregroundStyle(.gray)
-            }
-            Spacer(minLength: 0)
-            footer
+        HStack(spacing: 8) {
+            Circle()
+                .fill(isActive || isDesktopActive ? Color.green : Color.white.opacity(0.18))
+                .frame(width: 6, height: 6)
+            nameColumn
+            windows
+            trailing
         }
-        .padding(8)
-        .frame(width: 196, height: 112, alignment: .topLeading)
+        .padding(.horizontal, 8)
+        .frame(height: 26)
         .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.white.opacity(hovering ? 0.10 : 0.06))
+            RoundedRectangle(cornerRadius: 7)
+                .fill(Color.white.opacity(hovering ? 0.10 : (isActive ? 0.06 : 0)))
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(isActive ? Color.effectiveAccent.opacity(0.8) : .clear, lineWidth: 1)
-        )
-        .opacity(account.disabled ? 0.55 : 1)
+        .opacity(account.disabled ? 0.5 : 1)
+        .contentShape(Rectangle())
         .onHover { hovering = $0 }
+        .help(tooltip)
         .contextMenu { menu }
     }
 
-    private var header: some View {
+    private var nameColumn: some View {
         HStack(spacing: 4) {
             Text(account.displayName)
-                .font(.subheadline.weight(.semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .truncationMode(.middle)
-            Spacer(minLength: 2)
-            if isActive { AITag(text: manager.provider == .claude ? "CLI" : String(localized: "Active"), color: .green) }
+            if isActive && manager.provider == .claude { AITag(text: "CLI", color: .green) }
             if isDesktopActive { AITag(text: "App", color: .green) }
             if account.disabled { AITag(text: String(localized: "Disabled"), color: .gray) }
+            Spacer(minLength: 0)
         }
+        .frame(width: 150, alignment: .leading)
     }
 
-    private var footer: some View {
-        HStack(spacing: 4) {
+    @ViewBuilder
+    private var windows: some View {
+        if let usage = state?.usage, !usage.windows.isEmpty {
+            HStack(spacing: 10) {
+                ForEach(usage.windows, id: \.key) { window in
+                    AIUsageRow(label: label(for: window.key), pct: window.pct, reset: window.resetDate)
+                }
+            }
+            .frame(maxWidth: .infinity)
+        } else {
             Group {
                 if let error = state?.error {
-                    Text(AIAccountCard.errorText(error)).foregroundStyle(.orange)
-                } else if let date = state?.lastSuccess {
-                    Text("Updated \(AIDates.countdown(to: Date(), now: date)) ago").foregroundStyle(.gray)
+                    Text(AIAccountRow.errorText(error)).foregroundStyle(.orange)
+                } else {
+                    Text("Waiting for the first reading…").foregroundStyle(.gray)
                 }
             }
             .font(.caption2)
             .lineLimit(1)
-            Spacer(minLength: 2)
-            if !isActive || (manager.provider == .claude && !isDesktopActive && manager.desktopInstalled) {
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var trailing: some View {
+        HStack(spacing: 6) {
+            if state?.usage != nil, let error = state?.error {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 9))
+                    .foregroundStyle(.orange)
+                    .help(AIAccountRow.errorText(error))
+            }
+            if let credits = state?.usage?.resetCredits, credits.available > 0 {
+                AITag(text: "↺×\(credits.available)", color: .effectiveAccent)
+            }
+            if canSwitch {
                 Button {
                     Task { await AIAccountActions.switchTo(account, manager: manager) }
                 } label: {
@@ -206,6 +219,23 @@ struct AIAccountCard: View {
                 .disabled(manager.isWorking)
             }
         }
+        .frame(width: 84, alignment: .trailing)
+    }
+
+    private var tooltip: String {
+        var lines: [String] = [account.email]
+        if let subtitle = account.subtitle { lines.append(subtitle) }
+        for model in state?.usage?.models ?? [] {
+            var line = "\(model.name): \(Int(model.pct.rounded()))%"
+            if let reset = model.resetDate, reset > Date() { line += " · \(AIDates.countdown(to: reset))" }
+            lines.append(line)
+        }
+        if let credits = state?.usage?.resetCredits, credits.available > 0 { lines.append(resetCreditsText(credits)) }
+        if let error = state?.error { lines.append(AIAccountRow.errorText(error)) }
+        if let date = state?.lastSuccess {
+            lines.append(String(localized: "Updated \(AIDates.countdown(to: Date(), now: date)) ago"))
+        }
+        return lines.joined(separator: "\n")
     }
 
     @ViewBuilder
@@ -216,9 +246,9 @@ struct AIAccountCard: View {
         }
         Button("Rename…") { AIAccountActions.rename(account, manager: manager) }
         Divider()
-        Button("Move Left") { Task { await manager.move(account, by: -1) } }
+        Button("Move Up") { Task { await manager.move(account, by: -1) } }
             .disabled(manager.accounts.first == account)
-        Button("Move Right") { Task { await manager.move(account, by: 1) } }
+        Button("Move Down") { Task { await manager.move(account, by: 1) } }
             .disabled(manager.accounts.last == account)
         if manager.provider == .codex, (state?.usage?.resetCredits?.available ?? 0) > 0 {
             Divider()
@@ -263,11 +293,11 @@ struct AIUsageRow: View {
     private var color: Color { pct >= 90 ? .red : pct >= 70 ? .orange : .effectiveAccent }
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 4) {
             Text(label)
                 .font(.caption2)
                 .foregroundStyle(.gray)
-                .frame(width: 30, alignment: .leading)
+                .frame(width: 22, alignment: .leading)
                 .lineLimit(1)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
@@ -279,14 +309,13 @@ struct AIUsageRow: View {
             Text("\(Int(pct.rounded()))%")
                 .font(.caption2.monospacedDigit())
                 .foregroundStyle(.white)
-                .frame(width: 32, alignment: .trailing)
-            if let reset, reset > Date() {
-                Text(AIDates.countdown(to: reset))
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.gray)
-                    .frame(width: 44, alignment: .trailing)
-                    .lineLimit(1)
-            }
+                .frame(width: 30, alignment: .trailing)
+            // Always reserve the countdown column so bars line up from row to row.
+            Text(reset.map { $0 > Date() ? AIDates.countdown(to: $0) : "" } ?? "")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.gray)
+                .frame(width: 52, alignment: .leading)
+                .lineLimit(1)
         }
     }
 }

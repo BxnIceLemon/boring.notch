@@ -42,8 +42,10 @@ final class AIAccountsManager: ObservableObject {
     @Published private(set) var isWorking = false
     @Published private(set) var banner: String?
     @Published private(set) var lastSwitch: Date?
-    /// Codex: a separate browser sign-in for adding an account is waiting (its sign-in link).
+    /// A separate browser sign-in for adding an account is waiting (its sign-in link).
     @Published private(set) var pendingLoginURL: URL?
+    /// Claude's manual sign-in: the page shows a code that has to be pasted back.
+    @Published private(set) var pendingLoginNeedsCode = false
 
     private var loopTask: Task<Void, Never>?
     private var lastStatus: Date = .distantPast
@@ -233,12 +235,12 @@ final class AIAccountsManager: ObservableObject {
         }
     }
 
-    // MARK: - Adding a Codex account
+    // MARK: - Adding an account
 
-    /// Starts a sign-in in a private CODEX_HOME and returns its link. Signing out in ChatGPT would
-    /// revoke the current account's tokens, so accounts are added this way instead.
-    func beginCodexLogin() async -> URL? {
-        guard provider == .codex else { return nil }
+    /// Starts a sign-in in a private config directory (CODEX_HOME / CLAUDE_CONFIG_DIR) and returns
+    /// its link. Signing out in the app would revoke the current account's tokens, so accounts are
+    /// added this way instead; the current login is never touched.
+    func beginLogin() async -> URL? {
         if let pendingLoginURL { return pendingLoginURL }
         do {
             let result = try await call("loginStart")
@@ -247,6 +249,7 @@ final class AIAccountsManager: ObservableObject {
             }
             loginId = id
             pendingLoginURL = url
+            pendingLoginNeedsCode = result["needsCode"] as? Bool ?? false
             loginTask = Task { [weak self] in await self?.waitForLogin(id) }
             return url
         } catch {
@@ -255,7 +258,12 @@ final class AIAccountsManager: ObservableObject {
         }
     }
 
-    func cancelCodexLogin() async {
+    func submitLoginCode(_ code: String) async {
+        guard let id = loginId else { return }
+        _ = try? await call("loginCode", ["loginId": id, "code": code])
+    }
+
+    func cancelLogin() async {
         guard let id = loginId else { return }
         endLogin()
         _ = try? await call("loginCancel", ["loginId": id])
@@ -279,7 +287,7 @@ final class AIAccountsManager: ObservableObject {
                     : String(localized: "Added \(name)", comment: "AI accounts banner"))
             default:
                 endLogin()
-                let code = result["code"] as? String ?? "codex_login_failed"
+                let code = result["code"] as? String ?? "login_failed"
                 showBanner(AIAccountsError.localizedMessage(code: code, fallback: result["message"] as? String))
             }
             return
@@ -289,6 +297,7 @@ final class AIAccountsManager: ObservableObject {
     private func endLogin() {
         loginId = nil
         pendingLoginURL = nil
+        pendingLoginNeedsCode = false
         loginTask?.cancel()
         loginTask = nil
     }
@@ -519,8 +528,9 @@ struct AIAccountsError: Error {
         case "app_did_not_quit": return String(localized: "ChatGPT did not quit, so its login was not changed.")
         case "codex_cli_missing": return String(localized: "Could not find the codex command that comes with ChatGPT.")
         case "codex_login_port_busy": return String(localized: "Another Codex sign-in is already running. Finish or close it first.")
-        case "codex_login_timeout": return String(localized: "The sign-in took too long and was cancelled.")
-        case "codex_login_failed": return String(localized: "The sign-in did not complete.")
+        case "login_timeout", "codex_login_timeout": return String(localized: "The sign-in took too long and was cancelled.")
+        case "login_failed", "codex_login_failed", "claude_login_failed": return String(localized: "The sign-in did not complete.")
+        case "claude_cli_missing": return String(localized: "Install the Claude Code CLI first.")
         default: return fallback ?? code
         }
     }

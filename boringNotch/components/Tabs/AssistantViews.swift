@@ -75,29 +75,27 @@ struct AIAccountsPage: View {
             HoverButton(icon: "arrow.clockwise", iconColor: .gray, scale: .small) {
                 Task { await manager.refreshAll() }
             }
-            switch manager.provider {
-            case .claude:
+            if let url = manager.pendingLoginURL {
+                if manager.pendingLoginNeedsCode {
+                    HoverButton(icon: "key", iconColor: .gray, scale: .small) {
+                        Task { await AIAccountActions.enterLoginCode(manager: manager) }
+                    }
+                    .help(Text("Paste the code from the sign-in page"))
+                }
+                HoverButton(icon: "link", iconColor: .gray, scale: .small) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(url.absoluteString, forType: .string)
+                }
+                .help(Text("Copy the sign-in link"))
+                HoverButton(icon: "xmark", iconColor: .gray, scale: .small) {
+                    Task { await manager.cancelLogin() }
+                }
+                .help(Text("Cancel the sign-in"))
+            } else {
                 HoverButton(icon: "plus", iconColor: .gray, scale: .small) {
-                    Task { await manager.addCurrent() }
+                    Task { await AIAccountActions.addAccount(manager: manager) }
                 }
-                .help(Text("Save the current login"))
-            case .codex:
-                if let url = manager.pendingLoginURL {
-                    HoverButton(icon: "link", iconColor: .gray, scale: .small) {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(url.absoluteString, forType: .string)
-                    }
-                    .help(Text("Copy the sign-in link"))
-                    HoverButton(icon: "xmark", iconColor: .gray, scale: .small) {
-                        Task { await manager.cancelCodexLogin() }
-                    }
-                    .help(Text("Cancel the sign-in"))
-                } else {
-                    HoverButton(icon: "plus", iconColor: .gray, scale: .small) {
-                        Task { await AIAccountActions.addCodexAccount(manager: manager) }
-                    }
-                    .help(Text("Add an account"))
-                }
+                .help(Text("Add an account"))
             }
         }
     }
@@ -126,9 +124,7 @@ struct AIAccountsPage: View {
         VStack(alignment: .leading, spacing: 6) {
             switch manager.provider {
             case .claude:
-                Text(manager.loggedIn
-                     ? "Click + to save the Claude Code login that is active now. Log in with your next account and save it again."
-                     : "Install and log in to the Claude Code CLI, then click + to save the account. Repeat for each account.")
+                Text("Click + and sign in to the account to add in your browser. Claude Code stays signed in as it is. Don't use /logout to add an account: signing out revokes that account's saved login.")
             case .codex:
                 if !manager.usesFileStore {
                     Text("Codex keeps its login in the system keyring. Set cli_auth_credentials_store = \"file\" in ~/.codex/config.toml and log in again.")
@@ -410,12 +406,19 @@ enum AIAccountActions {
         await manager.switchTo(account)
     }
 
-    /// Adds a Codex account through a separate browser sign-in; the current login is not touched.
-    static func addCodexAccount(manager: AIAccountsManager) async {
-        guard let url = await manager.beginCodexLogin() else { return }
+    /// Adds an account through a separate browser sign-in; the current login is not touched.
+    static func addAccount(manager: AIAccountsManager) async {
+        guard let url = await manager.beginLogin() else { return }
         let alert = NSAlert()
         alert.messageText = String(localized: "Sign in to the account to add")
-        alert.informativeText = String(localized: "Sign in to the ChatGPT account you want to add in your browser. ChatGPT itself stays signed in as it is.\n\nIf your browser is already signed in to another ChatGPT account, copy the link and open it in a private window.")
+        switch manager.provider {
+        case .codex:
+            alert.informativeText = String(localized: "Sign in to the ChatGPT account you want to add in your browser. ChatGPT itself stays signed in as it is.\n\nIf your browser is already signed in to another ChatGPT account, copy the link and open it in a private window.")
+        case .claude:
+            alert.informativeText = manager.pendingLoginNeedsCode
+                ? String(localized: "Sign in to the Claude account you want to add in your browser, then paste the code the page shows. Claude Code and the Claude app stay signed in as they are.\n\nIf your browser is already signed in to another Claude account, copy the link and open it in a private window.")
+                : String(localized: "Sign in to the Claude account you want to add in your browser. Claude Code and the Claude app stay signed in as they are.\n\nIf your browser is already signed in to another Claude account, copy the link and open it in a private window.")
+        }
         alert.addButton(withTitle: String(localized: "Open in Browser"))
         alert.addButton(withTitle: String(localized: "Copy Link"))
         alert.addButton(withTitle: String(localized: "Cancel"))
@@ -426,8 +429,25 @@ enum AIAccountActions {
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(url.absoluteString, forType: .string)
         default:
-            await manager.cancelCodexLogin()
+            await manager.cancelLogin()
+            return
         }
+        if manager.pendingLoginNeedsCode { await enterLoginCode(manager: manager) }
+    }
+
+    /// Asks for the code Claude's manual sign-in page shows.
+    static func enterLoginCode(manager: AIAccountsManager) async {
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+        field.placeholderString = String(localized: "Code")
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Paste the code from the sign-in page")
+        alert.informativeText = String(localized: "After signing in, the page shows a code. Paste it here.")
+        alert.accessoryView = field
+        alert.addButton(withTitle: String(localized: "Continue"))
+        alert.addButton(withTitle: String(localized: "Later"))
+        alert.window.initialFirstResponder = field
+        guard run(alert) == .alertFirstButtonReturn else { return }
+        await manager.submitLoginCode(field.stringValue)
     }
 
     static func remove(_ account: AIAccount, manager: AIAccountsManager) {

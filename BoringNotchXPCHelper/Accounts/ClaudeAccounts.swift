@@ -70,25 +70,34 @@ final class ClaudeAccounts {
             throw AccountsError("claude_cli_not_logged_in", "Claude Code CLI is not logged in. Run `claude` and log in first.")
         }
         let who = try identity(of: live)
-        let oauthAccount = try oauthAccountBlock(for: who)
-        return try store.withLock {
+        let saved = try save(live, who: who, oauthAccount: try oauthAccountBlock(for: who))
+        try store.withLock {
+            if ClaudeDesktopLogin.currentAccountUuid() == who.uuid,
+               !AppRelauncher.isRunning(AccountPaths.claudeDesktopBundleID),
+               let pieces = try? ClaudeDesktopLogin.capture(),
+               let id = saved.account["id"] as? String {
+                try store.writeJSON(id, "desktop-login.json", pieces)
+            }
+        }
+        return saved.account
+    }
+
+    /// Stores `credential` as the saved CLI login of the matching account (new or existing).
+    func save(_ credential: String, who: Identity, oauthAccount: JSONObject) throws -> (account: JSONObject, existed: Bool) {
+        try store.withLock {
             var accounts = try store.accounts()
-            var account = accounts.first { $0.accountUuid == who.uuid } ?? SavedAccount(email: who.email ?? who.uuid)
+            let existing = accounts.first { $0.accountUuid == who.uuid }
+            var account = existing ?? SavedAccount(email: who.email ?? who.uuid)
             account.email = who.email ?? account.email
             account.accountUuid = who.uuid
             account.organizationUuid = who.organizationUuid ?? account.organizationUuid
             account.organizationName = who.organizationName ?? (oauthAccount["organizationName"] as? String) ?? account.organizationName
-            account.plan = Self.plan(credential: live, oauthAccount: oauthAccount) ?? account.plan
-            try store.writeText(account.id, "credentials.json", live)
+            account.plan = Self.plan(credential: credential, oauthAccount: oauthAccount) ?? account.plan
+            try store.writeText(account.id, "credentials.json", credential)
             try store.writeJSON(account.id, "oauthAccount.json", oauthAccount)
             if let index = accounts.firstIndex(where: { $0.id == account.id }) { accounts[index] = account } else { accounts.append(account) }
             try store.save(accounts)
-            if ClaudeDesktopLogin.currentAccountUuid() == who.uuid,
-               !AppRelauncher.isRunning(AccountPaths.claudeDesktopBundleID),
-               let pieces = try? ClaudeDesktopLogin.capture() {
-                try store.writeJSON(account.id, "desktop-login.json", pieces)
-            }
-            return account.json
+            return (account.json, existing != nil)
         }
     }
 
@@ -418,6 +427,7 @@ final class ClaudeAccounts {
     // MARK: - Identity
 
     private var identityCache: [String: Identity] = [:]
+    var identityOverride: ((String) -> Identity?)?   // tests only
 
     /// Whose token is this? Cached per access-token hash, so the profile endpoint is only asked
     /// when the token changes. Falls back to matching saved credentials when the token is dead.
@@ -425,6 +435,7 @@ final class ClaudeAccounts {
         guard let oauth = Self.oauth(creds), let token = oauth.string("accessToken") else {
             throw AccountsError("bad_credentials", "credential has no access token")
         }
+        if let identityOverride, let who = identityOverride(creds) { return who }
         let key = SHA256.hash(data: Data(token.utf8)).map { String(format: "%02x", $0) }.joined()
         if let cached = identityCache[key] { return cached }
 
@@ -453,8 +464,8 @@ final class ClaudeAccounts {
     /// The `oauthAccount` block to splice into ~/.claude.json when this login is activated. Taken
     /// from ~/.claude.json when it describes the same account (it is shared with the desktop app's
     /// built-in Claude Code, so it may describe another one), otherwise built from the profile.
-    private func oauthAccountBlock(for who: Identity) throws -> JSONObject {
-        if let config = try JSONFile.read(AccountPaths.claudeGlobalConfig),
+    func oauthAccountBlock(for who: Identity, config url: URL = AccountPaths.claudeGlobalConfig) throws -> JSONObject {
+        if let config = try JSONFile.read(url),
            let block = config.object("oauthAccount"), block.string("accountUuid") == who.uuid {
             return block
         }

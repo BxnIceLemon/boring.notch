@@ -2444,6 +2444,16 @@
         }
       }
     },
+    "After signing in, the page shows a code. Paste it here." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录后页面会显示一个授权码，请粘贴到这里。"
+          }
+        }
+      }
+    },
     "AI Accounts" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5900,12 +5910,12 @@
         }
       }
     },
-    "Click + to save the Claude Code login that is active now. Log in with your next account and save it again." : {
+    "Click + and sign in to the account to add in your browser. Claude Code stays signed in as it is. Don't use /logout to add an account: signing out revokes that account's saved login." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "点击 + 保存当前的 Claude Code 登录。然后登录下一个账号，再保存一次。"
+            "value" : "点击 +，在浏览器中登录要添加的账号，Claude Code 当前的登录保持不变。不要通过 /logout 退出登录来添加账号：退出会注销该账号已保存的登录。"
           }
         }
       }
@@ -6206,6 +6216,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刘海关闭时"
+          }
+        }
+      }
+    },
+    "Code" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "授权码"
           }
         }
       }
@@ -12884,12 +12904,12 @@
         }
       }
     },
-    "Install and log in to the Claude Code CLI, then click + to save the account. Repeat for each account." : {
+    "Install the Claude Code CLI first." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安装并登录 Claude Code CLI，然后点击 + 保存账号。每个账号重复一次。"
+            "value" : "请先安装 Claude Code CLI。"
           }
         }
       }
@@ -13012,6 +13032,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍后"
           }
         }
       }
@@ -17538,6 +17568,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "其他…"
+          }
+        }
+      }
+    },
+    "Paste the code from the sign-in page" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴登录页面上的授权码"
           }
         }
       }
@@ -22072,6 +22112,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请在浏览器中登录要添加的 ChatGPT 账号，ChatGPT 本身的登录保持不变。\n\n如果浏览器已登录了别的 ChatGPT 账号，请复制链接，在隐私窗口中打开。"
+          }
+        }
+      }
+    },
+    "Sign in to the Claude account you want to add in your browser, then paste the code the page shows. Claude Code and the Claude app stay signed in as they are.\n\nIf your browser is already signed in to another Claude account, copy the link and open it in a private window." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在浏览器中登录要添加的 Claude 账号，然后粘贴页面上显示的授权码。Claude Code 和 Claude App 的登录保持不变。\n\n如果浏览器已登录了别的 Claude 账号，请复制链接，在隐私窗口中打开。"
+          }
+        }
+      }
+    },
+    "Sign in to the Claude account you want to add in your browser. Claude Code and the Claude app stay signed in as they are.\n\nIf your browser is already signed in to another Claude account, copy the link and open it in a private window." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在浏览器中登录要添加的 Claude 账号。Claude Code 和 Claude App 的登录保持不变。\n\n如果浏览器已登录了别的 Claude 账号，请复制链接，在隐私窗口中打开。"
           }
         }
       }

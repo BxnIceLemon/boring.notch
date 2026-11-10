@@ -15,6 +15,7 @@ enum AccountsService {
     private static let claude = ClaudeAccounts()
     private static let codex = CodexAccounts()
     private static let codexLogin = CodexLogin(accounts: codex)
+    private static let claudeLogin = ClaudeLogin(accounts: claude)
 
     static func handle(_ request: Data, reply: @escaping (Data) -> Void) {
         queue.async {
@@ -45,6 +46,10 @@ enum AccountsService {
             return try claude.switchTo(try requireID(), cli: request["cli"] as? Bool ?? true,
                                        desktop: request["desktop"] as? Bool ?? false,
                                        relaunchDesktop: request["relaunchDesktop"] as? Bool ?? true)
+        case ("claude", "loginStart"): return try claudeLogin.start()
+        case ("claude", "loginPoll"): return try claudeLogin.poll(request.string("loginId") ?? "")
+        case ("claude", "loginCode"): claudeLogin.submitCode(request.string("loginId") ?? "", request.string("code") ?? ""); return [:]
+        case ("claude", "loginCancel"): claudeLogin.cancel(request.string("loginId") ?? ""); return [:]
         case ("claude", "usage"): return try claude.usage(try requireID())
         case ("claude", "warmup"): return try claude.warmup(try requireID())
         case ("claude", "remove"): try claude.remove(try requireID()); return [:]

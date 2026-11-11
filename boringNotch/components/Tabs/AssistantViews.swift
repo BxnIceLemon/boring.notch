@@ -293,7 +293,7 @@ struct AIAccountRow: View {
     private func label(for key: String) -> String {
         switch key {
         case "five_hour": return String(localized: "5h", comment: "Five-hour quota window label")
-        case "seven_day": return String(localized: "7d", comment: "Seven-day quota window label")
+        // Claude's "seven_day" and Codex's "weekly" are the same kind of window: one label for both.
         default: return String(localized: "Week", comment: "Weekly quota window label")
         }
     }

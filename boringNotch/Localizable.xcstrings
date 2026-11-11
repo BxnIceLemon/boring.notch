@@ -1462,16 +1462,6 @@
         }
       }
     },
-    "7d" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "7天"
-          }
-        }
-      }
-    },
     "A switch happens when any window reaches its threshold. Model limits add a gate for a Claude model's own weekly limit (names as shown on the account cards); a name without a number uses the weekly threshold. The required improvement stops two accounts near the line from switching back and forth." : {
       "localizations" : {
         "zh-Hans" : {

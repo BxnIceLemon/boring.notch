@@ -36,7 +36,13 @@ final class ClaudeAccounts {
     // MARK: - Status
 
     func status() throws -> JSONObject {
-        let live = try? liveCredential()
+        // A Keychain error is not "logged out": report it, so the page can say what is wrong.
+        var keychainError: String?
+        let live: String?
+        do { live = try liveCredential() } catch {
+            live = nil
+            keychainError = (error as? AccountsError)?.message ?? error.localizedDescription
+        }
         let liveIdentity = live.flatMap { try? identity(of: $0) }
         let desktopUuid = ClaudeDesktopLogin.currentAccountUuid()
         let accounts = try store.accounts()
@@ -46,6 +52,7 @@ final class ClaudeAccounts {
         }
         return [
             "cliLoggedIn": live != nil,
+            "cliKeychainError": keychainError ?? NSNull(),
             "cliActiveId": accounts.first { $0.accountUuid != nil && $0.accountUuid == liveIdentity?.uuid }?.id ?? NSNull(),
             "unmanagedCLI": unmanaged ?? NSNull(),
             "desktopInstalled": ClaudeDesktopLogin.isInstalled,

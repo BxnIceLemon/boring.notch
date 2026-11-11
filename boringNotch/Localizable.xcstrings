@@ -7036,6 +7036,16 @@
         }
       }
     },
+    "Could not read the Claude Code login from the Keychain" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法从钥匙串读取 Claude Code 的登录"
+          }
+        }
+      }
+    },
     "Could not tell which account the current login belongs to." : {
       "localizations" : {
         "zh-Hans" : {

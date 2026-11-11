@@ -29,6 +29,8 @@ final class AIAccountsManager: ObservableObject {
     @Published private(set) var desktopActiveId: String?     // Claude desktop app
     @Published private(set) var unmanagedEmail: String?      // current login that is not saved yet
     @Published private(set) var loggedIn = false
+    /// Claude: the CLI login could not be read from the Keychain (so "not logged in" is unknown).
+    @Published private(set) var keychainError: String?
     @Published private(set) var desktopInstalled = false
     @Published private(set) var desktopLoginVerified = false
     @Published private(set) var usesFileStore = true         // Codex: file credential store in use
@@ -101,6 +103,7 @@ final class AIAccountsManager: ObservableObject {
             activeId = result["cliActiveId"] as? String
             desktopActiveId = result["desktopActiveId"] as? String
             loggedIn = result["cliLoggedIn"] as? Bool ?? false
+            keychainError = result["cliKeychainError"] as? String
             unmanagedEmail = (result["unmanagedCLI"] as? [String: Any])?["email"] as? String
             desktopInstalled = result["desktopInstalled"] as? Bool ?? false
             desktopLoginVerified = result["desktopLoginVerified"] as? Bool ?? false

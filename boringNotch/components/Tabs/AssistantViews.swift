@@ -55,6 +55,10 @@ struct AIAccountsPage: View {
                     Text("Current login \(email) is not saved").foregroundStyle(.orange)
                 } else if let active = manager.accounts.first(where: { $0.id == manager.activeId }) {
                     Text("Current: \(active.displayName)").foregroundStyle(.gray)
+                } else if manager.statusLoaded, let error = manager.keychainError {
+                    Text("Could not read the Claude Code login from the Keychain")
+                        .foregroundStyle(.orange)
+                        .help(error)
                 } else if manager.statusLoaded && !manager.loggedIn {
                     Text(manager.provider == .claude ? "Claude Code CLI not logged in" : "Codex not logged in").foregroundStyle(.gray)
                 }

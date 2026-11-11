@@ -6,6 +6,10 @@
 	<dict>
 		<key>ServiceType</key>
 		<string>Application</string>
+		<!-- Run in the caller's security session. Otherwise the helper gets a new session in which
+		     the login Keychain is locked, and reading Claude Code's login fails (errSecInteractionNotAllowed). -->
+		<key>JoinExistingSession</key>
+		<true/>
 	</dict>
 </dict>
 </plist>

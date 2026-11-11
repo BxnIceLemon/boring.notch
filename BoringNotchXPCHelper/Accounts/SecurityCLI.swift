@@ -9,8 +9,10 @@
 //
 
 import Foundation
+import os
 
 enum SecurityCLI {
+    private static let log = Logger(subsystem: "theboringteam.boringnotch.helper", category: "keychain")
     private static let tool = "/usr/bin/security"   // absolute: a PATH-injected `security` must not see secrets
     private static let timeout: TimeInterval = 10
     private static let notFound: Int32 = 44
@@ -34,7 +36,9 @@ enum SecurityCLI {
             return text
         }
         if result.status == notFound { return nil }
-        throw AccountsError("keychain", "security find-generic-password failed (\(result.status))")
+        let detail = String(decoding: result.stderr, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+        log.error("find-generic-password \(service, privacy: .public) as \(account, privacy: .public) failed: \(result.status) \(detail, privacy: .public)")
+        throw AccountsError("keychain", "security find-generic-password failed (\(result.status)) \(detail)")
     }
 
     static func write(service: String, account: String = accountName, secret: String) throws {

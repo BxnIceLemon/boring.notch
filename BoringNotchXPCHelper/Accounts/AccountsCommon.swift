@@ -205,9 +205,13 @@ enum HTTP {
         return URLSession(configuration: config)
     }()
 
+    /// Tests only: answers requests instead of the network.
+    static var testHandler: ((_ url: String, _ method: String, _ headers: [String: String], _ body: JSONObject?) -> Response)?
+
     /// Blocking request (the helper does all account work on one serial queue).
     static func send(_ url: String, method: String = "GET", headers: [String: String] = [:],
                      json body: JSONObject? = nil, timeout: TimeInterval = 10) throws -> Response {
+        if let testHandler { return testHandler(url, method, headers, body) }
         guard let target = URL(string: url) else { throw AccountsError("bad_url", url) }
         var request = URLRequest(url: target, timeoutInterval: timeout)
         request.httpMethod = method

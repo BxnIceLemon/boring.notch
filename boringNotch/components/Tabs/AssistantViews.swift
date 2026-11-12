@@ -51,6 +51,12 @@ struct AIAccountsPage: View {
                     Text(banner).foregroundStyle(.white)
                 } else if manager.pendingLoginURL != nil {
                     Text("Waiting for the sign-in in your browser…").foregroundStyle(.white)
+                } else if manager.provider == .claude, let code = manager.cliRefreshError {
+                    Text(code == "refresh_dead"
+                         ? "The Claude Code CLI login has expired; run claude and log in again"
+                         : "Could not refresh the Claude Code CLI login")
+                        .foregroundStyle(.orange)
+                        .help(AIAccountRow.errorText(code, manager.provider))
                 } else if let email = manager.unmanagedEmail {
                     Text("Current login \(email) is not saved").foregroundStyle(.orange)
                 } else if let active = manager.accounts.first(where: { $0.id == manager.activeId }) {

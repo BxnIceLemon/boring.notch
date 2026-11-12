@@ -95,6 +95,16 @@ enum ClaudeCodeLocks {
         return config.deletingLastPathComponent().appendingPathComponent(config.lastPathComponent + ".lock")
     }
 
+    /// The two locks Claude Code itself holds while refreshing its OAuth token (network inside is
+    /// fine: they are touched every few seconds and only go stale after 60s).
+    static func withCredentials<T>(_ body: () throws -> T) throws -> T {
+        let primary = try ProperLockfile.acquire(oauthRefreshLock, staleness: ProperLockfile.credentialsStaleness)
+        defer { primary.release() }
+        let legacy = try ProperLockfile.acquire(legacyCredentialsLock, staleness: ProperLockfile.credentialsStaleness)
+        defer { legacy.release() }
+        return try body()
+    }
+
     /// Credential locks in Claude Code's own order, then the config lock. No network inside.
     static func withAll<T>(_ body: () throws -> T) throws -> T {
         let primary = try ProperLockfile.acquire(oauthRefreshLock, staleness: ProperLockfile.credentialsStaleness)

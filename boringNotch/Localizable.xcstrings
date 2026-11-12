@@ -7036,6 +7036,16 @@
         }
       }
     },
+    "Could not refresh the Claude Code CLI login" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法刷新 Claude Code CLI 的登录"
+          }
+        }
+      }
+    },
     "Could not tell which account the current login belongs to." : {
       "localizations" : {
         "zh-Hans" : {
@@ -23296,6 +23306,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这张卡已被兑换"
+          }
+        }
+      }
+    },
+    "The Claude Code CLI login has expired; run claude and log in again" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code CLI 的登录已失效，请运行 claude 重新登录"
           }
         }
       }

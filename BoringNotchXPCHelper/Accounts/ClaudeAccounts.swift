@@ -7,12 +7,14 @@
 //  (ClaudeDesktopLogin). Ported from ccswap (oauth.py, switcher.py, credentials.py).
 //
 //  Safety rules (see the plan):
-//  - The live CLI credential belongs to Claude Code: we read it, back it up, replace it, but never
-//    refresh it. Only saved, inactive credentials are refreshed, and a rotated token is written
-//    to disk before it is used.
+//  - The live CLI credential belongs to Claude Code. When it has expired (Claude Code only
+//    refreshes it while it runs), it is refreshed exactly like Claude Code does it: under Claude
+//    Code's two credential locks, after re-reading the Keychain item, and the rotated token goes
+//    into the Keychain item first. Saved, inactive credentials are refreshed in the store. A
+//    rotated token is always written before it is used.
 //  - Anything we overwrite is saved first (back into its account, or into stash/).
 //  - CLI switches hold Claude Code's three locks; ~/.claude.json only gets `oauthAccount` replaced.
-//  - No network while those locks are held.
+//  - No network while all three locks are held (a refresh holds only the two credential locks).
 //  - Switching never touches conversations, session history or other settings.
 //
 
@@ -38,12 +40,12 @@ final class ClaudeAccounts {
     func status() throws -> JSONObject {
         // A Keychain error is not "logged out": report it, so the page can say what is wrong.
         var keychainError: String?
-        let live: String?
-        do { live = try liveCredential() } catch {
-            live = nil
+        var login: CurrentLogin?
+        do { login = try currentLogin() } catch {
             keychainError = (error as? AccountsError)?.message ?? error.localizedDescription
         }
-        let liveIdentity = live.flatMap { try? identity(of: $0) }
+        let live = login?.creds
+        let liveIdentity = login?.who
         let desktopUuid = ClaudeDesktopLogin.currentAccountUuid()
         let accounts = try store.accounts()
         var unmanaged: JSONObject?
@@ -53,6 +55,8 @@ final class ClaudeAccounts {
         return [
             "cliLoggedIn": live != nil,
             "cliKeychainError": keychainError ?? NSNull(),
+            // The CLI's login expired and could not be refreshed (refresh_dead: log in again).
+            "cliRefreshError": login?.refreshError?.code ?? NSNull(),
             "cliActiveId": accounts.first { $0.accountUuid != nil && $0.accountUuid == liveIdentity?.uuid }?.id ?? NSNull(),
             "unmanagedCLI": unmanaged ?? NSNull(),
             "desktopInstalled": ClaudeDesktopLogin.isInstalled,
@@ -73,10 +77,11 @@ final class ClaudeAccounts {
     /// Saves the CLI's current login. When the desktop app is signed in to the same account and is
     /// quit, its login pieces are saved too (otherwise they are captured on the next switch).
     func addCurrent() throws -> JSONObject {
-        guard let live = try liveCredential() else {
+        guard let login = try currentLogin() else {
             throw AccountsError("claude_cli_not_logged_in", "Claude Code CLI is not logged in. Run `claude` and log in first.")
         }
-        let who = try identity(of: live)
+        let live = login.creds
+        let who = try login.who ?? identity(of: live)
         let saved = try save(live, who: who, oauthAccount: try oauthAccountBlock(for: who))
         try store.withLock {
             if ClaudeDesktopLogin.currentAccountUuid() == who.uuid,
@@ -177,16 +182,16 @@ final class ClaudeAccounts {
 
                     // 2. Activate the target; roll back on any failure.
                     do {
-                        try SecurityCLI.write(service: Self.keychainService, secret: targetCreds)
+                        try writeLive(targetCreds)
                         if let targetOAuth {
                             config["oauthAccount"] = targetOAuth
                             try PrivateFiles.atomicWriteJSON(config, to: AccountPaths.claudeGlobalConfig, pretty: true)
                         }
-                        guard try SecurityCLI.read(service: Self.keychainService) == targetCreds else {
+                        guard try liveCredential() == targetCreds else {
                             throw AccountsError("verify_failed", "The new Claude Code login could not be verified.")
                         }
                     } catch {
-                        if let live { try? SecurityCLI.write(service: Self.keychainService, secret: live) }
+                        if let live { try? writeLive(live) }
                         if let configText { try? PrivateFiles.atomicWrite(Data(configText.utf8), to: AccountPaths.claudeGlobalConfig) }
                         throw error
                     }
@@ -263,13 +268,20 @@ final class ClaudeAccounts {
         guard let saved = try store.readText(id, "credentials.json") else {
             return ["error": "no_cli_login"]
         }
-        let live = try? liveCredential()
-        let liveIdentity = live.flatMap { try? identity(of: $0) }
-        let isActive = liveIdentity != nil && liveIdentity?.uuid == account.accountUuid
+        let login = try? currentLogin()
+        let live = login?.creds
+        var isActive = login?.who != nil && login?.who?.uuid == account.accountUuid
+        // Same refresh token as the CLI's login: it is that login, even if it couldn't be identified.
+        // Refreshing it as a saved copy would revoke the CLI's token.
+        if !isActive, let liveRefresh = live.flatMap(Self.oauth)?.string("refreshToken"),
+           liveRefresh == Self.oauth(saved)?.string("refreshToken") {
+            isActive = true
+        }
 
         if isActive, let live {
-            guard let token = Self.oauth(live)?.string("accessToken") else { return ["error": "no_cli_login"] }
+            if let error = login?.refreshError { return ["error": error.code, "message": error.message, "active": true] }
             if Self.isExpired(live) { return ["error": "token_expired", "active": true] }
+            guard let token = Self.oauth(live)?.string("accessToken") else { return ["error": "no_cli_login"] }
             return fetchUsage(token: token, active: true)
         }
 
@@ -394,23 +406,8 @@ final class ClaudeAccounts {
 
     /// Refreshes a *saved, inactive* credential and persists the rotation before returning it.
     private func refreshSaved(_ id: String, _ creds: String) -> Refresh {
-        guard var data = JSONFile.parse(creds), var oauth = data.object("claudeAiOauth"),
-              let refreshToken = oauth.string("refreshToken") else {
-            return .failure(AccountsError("no_refresh_token", "no refresh token"))
-        }
         do {
-            let response = try HTTP.send(Self.tokenURL, method: "POST", headers: ["User-Agent": Self.userAgent],
-                                         json: ["grant_type": "refresh_token", "refresh_token": refreshToken, "client_id": Self.clientID])
-            guard response.status == 200, let json = response.json, let access = json.string("access_token") else {
-                let code = (response.status == 400 || response.status == 401) ? "refresh_dead" : "refresh_http_\(response.status)"
-                return .failure(AccountsError(code, "token refresh failed (\(response.status))"))
-            }
-            oauth["accessToken"] = access
-            if let expiresIn = json.number("expires_in") { oauth["expiresAt"] = Int((Date().timeIntervalSince1970 + expiresIn) * 1000) }
-            if let rotated = json.string("refresh_token") { oauth["refreshToken"] = rotated }
-            if let scope = json.string("scope") { oauth["scopes"] = scope.split(separator: " ").map(String.init) }
-            data["claudeAiOauth"] = oauth
-            let updated = try JSONFile.string(data)
+            let updated = try requestRefresh(creds)
             try store.withLock { try store.writeText(id, "credentials.json", updated) }   // persist before use
             return .success(updated)
         } catch let error as AccountsError {
@@ -420,6 +417,86 @@ final class ClaudeAccounts {
         }
     }
 
+    struct CurrentLogin { let creds: String; let who: Identity?; let refreshError: AccountsError? }
+
+    private var liveRefreshFailure: (at: Date, error: AccountsError)?
+    private static let liveRefreshRetry: TimeInterval = 10 * 60
+
+    /// The CLI's login and whose it is (nil: not logged in; throws on Keychain errors). Claude
+    /// Code only refreshes its token while it runs, and an expired token can't be identified
+    /// online, so an expired login is refreshed first, exactly as Claude Code would on its next
+    /// run (see refreshLive). After a failed refresh, the next try waits 10 minutes.
+    func currentLogin() throws -> CurrentLogin? {
+        guard var live = try liveCredential() else { return nil }
+        var refreshError: AccountsError?
+        var refreshed = false
+        if Self.isExpired(live) {
+            if let failure = liveRefreshFailure, Date().timeIntervalSince(failure.at) < Self.liveRefreshRetry {
+                refreshError = failure.error
+            } else {
+                do {
+                    let result = try refreshLive()
+                    if result.creds != live { live = result.creds; refreshed = true }
+                    if let error = result.keychainError { throw error }
+                    liveRefreshFailure = nil
+                } catch {
+                    let failure = error as? AccountsError ?? AccountsError("refresh_failed", "\(error)")
+                    liveRefreshFailure = (Date(), failure)
+                    refreshError = failure
+                }
+            }
+        }
+        let who = try? identity(of: live)
+        // Keep the rotated token in the owner's saved copy as well (it is what a switch backs up).
+        if refreshed, let who, let owner = try? store.accounts().first(where: { $0.accountUuid == who.uuid }) {
+            try? store.withLock { try store.writeText(owner.id, "credentials.json", live) }
+        }
+        return CurrentLogin(creds: live, who: who, refreshError: refreshError)
+    }
+
+    /// Refreshes the CLI's own login the way Claude Code does: under its two credential locks,
+    /// re-read the Keychain item (a running Claude Code may have refreshed it meanwhile), refresh,
+    /// and write the rotated tokens back to the Keychain item. Claude Code re-reads the item under
+    /// the same locks before it refreshes, so it picks the new token up. If the Keychain write
+    /// fails, the new tokens are stashed (the old refresh token is already revoked) and returned
+    /// with the error.
+    private func refreshLive() throws -> (creds: String, keychainError: AccountsError?) {
+        try ClaudeCodeLocks.withCredentials {
+            guard let live = try liveCredential() else {
+                throw AccountsError("no_cli_login", "Claude Code is not logged in.")
+            }
+            guard Self.isExpired(live) else { return (live, nil) }   // refreshed by Claude Code meanwhile
+            let updated = try requestRefresh(live)
+            do {
+                try writeLive(updated)
+                return (updated, nil)
+            } catch {
+                try? store.stash(["credentials": updated], reason: "claude-refresh-keychain-write-failed")
+                return (updated, error as? AccountsError ?? AccountsError("keychain", "\(error)"))
+            }
+        }
+    }
+
+    /// POSTs the refresh and returns the credential JSON with the new tokens (other fields kept).
+    private func requestRefresh(_ creds: String) throws -> String {
+        guard var data = JSONFile.parse(creds), var oauth = data.object("claudeAiOauth"),
+              let refreshToken = oauth.string("refreshToken") else {
+            throw AccountsError("no_refresh_token", "no refresh token")
+        }
+        let response = try HTTP.send(Self.tokenURL, method: "POST", headers: ["User-Agent": Self.userAgent],
+                                     json: ["grant_type": "refresh_token", "refresh_token": refreshToken, "client_id": Self.clientID])
+        guard response.status == 200, let json = response.json, let access = json.string("access_token") else {
+            let code = (response.status == 400 || response.status == 401) ? "refresh_dead" : "refresh_http_\(response.status)"
+            throw AccountsError(code, "token refresh failed (\(response.status))")
+        }
+        oauth["accessToken"] = access
+        if let expiresIn = json.number("expires_in") { oauth["expiresAt"] = Int((Date().timeIntervalSince1970 + expiresIn) * 1000) }
+        if let rotated = json.string("refresh_token") { oauth["refreshToken"] = rotated }
+        if let scope = json.string("scope") { oauth["scopes"] = scope.split(separator: " ").map(String.init) }
+        data["claudeAiOauth"] = oauth
+        return try JSONFile.string(data)
+    }
+
     static func oauth(_ creds: String) -> JSONObject? { JSONFile.parse(creds)?.object("claudeAiOauth") }
 
     static func isExpired(_ creds: String) -> Bool {
@@ -427,8 +504,17 @@ final class ClaudeAccounts {
         return Date().timeIntervalSince1970 * 1000 + expiryBuffer * 1000 >= expiresAt
     }
 
+    /// Tests only: stand-ins for Claude Code's Keychain item.
+    var keychainOverride: (read: () throws -> String?, write: (String) throws -> Void)?
+
     func liveCredential() throws -> String? {
-        try SecurityCLI.read(service: Self.keychainService)
+        if let keychainOverride { return try keychainOverride.read() }
+        return try SecurityCLI.read(service: Self.keychainService)
+    }
+
+    private func writeLive(_ secret: String) throws {
+        if let keychainOverride { return try keychainOverride.write(secret) }
+        try SecurityCLI.write(service: Self.keychainService, secret: secret)
     }
 
     // MARK: - Identity

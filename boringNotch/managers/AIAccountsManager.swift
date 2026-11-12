@@ -31,6 +31,8 @@ final class AIAccountsManager: ObservableObject {
     @Published private(set) var loggedIn = false
     /// Claude: the CLI login could not be read from the Keychain (so "not logged in" is unknown).
     @Published private(set) var keychainError: String?
+    /// Claude: the CLI's expired login could not be refreshed (error code).
+    @Published private(set) var cliRefreshError: String?
     @Published private(set) var desktopInstalled = false
     @Published private(set) var desktopLoginVerified = false
     @Published private(set) var usesFileStore = true         // Codex: file credential store in use
@@ -104,6 +106,7 @@ final class AIAccountsManager: ObservableObject {
             desktopActiveId = result["desktopActiveId"] as? String
             loggedIn = result["cliLoggedIn"] as? Bool ?? false
             keychainError = result["cliKeychainError"] as? String
+            cliRefreshError = result["cliRefreshError"] as? String
             unmanagedEmail = (result["unmanagedCLI"] as? [String: Any])?["email"] as? String
             desktopInstalled = result["desktopInstalled"] as? Bool ?? false
             desktopLoginVerified = result["desktopLoginVerified"] as? Bool ?? false

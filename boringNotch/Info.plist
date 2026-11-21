@@ -11,6 +11,12 @@
 	<true/>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
+	<!-- Personal fork: the feed is upstream's, so an automatic update would replace this build with
+	     upstream's release. Never check or install updates automatically. -->
+	<key>SUEnableAutomaticChecks</key>
+	<false/>
+	<key>SUAutomaticallyUpdate</key>
+	<false/>
 	<key>SUFeedURL</key>
 	<string>https://TheBoredTeam.github.io/boring.notch/appcast.xml</string>
 	<key>SUPublicEDKey</key>

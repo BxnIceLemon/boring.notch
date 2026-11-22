@@ -20149,47 +20149,6 @@
         }
       }
     },
-    "Nightly" : {
-      "comment" : "Update channel: nightly",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nightly"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nightly"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noturna"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ночные сборки"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gecelik"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每日构建版"
-          }
-        }
-      }
-    },
     "No Action" : {
       "comment" : "Option key behaviour",
       "localizations" : {
@@ -31039,88 +30998,6 @@
         }
       }
     },
-    "Stable" : {
-      "comment" : "Update channel: stable",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stable"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stabiel"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estável"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Стабильная версия"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sabit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正式版"
-          }
-        }
-      }
-    },
-    "Stable and Beta come from official releases." : {
-      "comment" : "Software updates channel footer",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les versions « Stable » et « Bêta » proviennent des versions officielles."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "'Stabiel' en 'Beta' komen van officiële releases."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estável e Beta vem dos lançamentos oficiais."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Стабильная и Бета-версии приходят из официальных релизов."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kararlı ve Beta sürümleri resmi yayınlardan gelir."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正式版和测试版都来自官方发布。"
-          }
-        }
-      }
-    },
     "Strategy" : {
       "localizations" : {
         "zh-Hans" : {
@@ -32687,47 +32564,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未接电源"
-          }
-        }
-      }
-    },
-    "Update channel" : {
-      "comment" : "Software updates channel picker label",
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Canal de mise à jour"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Updatekanaal"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Canal de atualização"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Канал обновлений"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Güncelleme kanalı"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更新渠道"
           }
         }
       }

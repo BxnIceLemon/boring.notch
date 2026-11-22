@@ -468,10 +468,9 @@ struct ContentView: View {
                                .frame(height: max(38, displayClosedNotchHeight))
                                .opacity(gestureProgress != 0 ? 1.0 - min(abs(gestureProgress) * 0.1, 0.3) : 1.0)
                        }
-                        // New case to enable compact notch on external displays
-                        else if !vm.hasNotch {
-                           Rectangle().fill(.clear).frame(width: vm.closedNotchSize.width - 20, height: 11) // idle notch height is halved on non notch display
-                       } else {
+                       // Fork: no fixed 11 pt "compact" idle notch on displays without a notch.
+                       // It ignored the notch height setting (e.g. "match menu bar height").
+                       else {
                            Rectangle().fill(.clear).frame(width: vm.closedNotchSize.width - 20, height: displayClosedNotchHeight)
                        }
 

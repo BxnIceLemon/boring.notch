@@ -45,6 +45,17 @@ enum WindowHeightMode: String, Defaults.Serializable {
     case matchMenuBar = "Match menu bar height"
     case matchRealNotchSize = "Match real notch height"
     case custom = "Custom height"
+
+    /// Also reads the value saved before the "menubar" → "menu bar" spelling fix. Without it a
+    /// saved "Match menubar height" failed to decode and silently fell back to the default.
+    init?(rawValue: String) {
+        switch rawValue {
+        case "Match menu bar height", "Match menubar height": self = .matchMenuBar
+        case "Match real notch height": self = .matchRealNotchSize
+        case "Custom height": self = .custom
+        default: return nil
+        }
+    }
 }
 
 enum SliderColorEnum: String, CaseIterable, Defaults.Serializable {

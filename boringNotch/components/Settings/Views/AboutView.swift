@@ -19,9 +19,7 @@ struct AboutView: View {
     private var reportVersion: String {
         let version = Bundle.main.releaseVersionNumber ?? "unknown"
         let build = Bundle.main.buildVersionNumber ?? "unknown"
-        let channel = UpdateChannel.bundled
-        let channelSuffix = channel == .stable ? "" : ", \(channel.rawValue) channel"
-        return "\(version) (build \(build)\(channelSuffix))"
+        return "\(version) (build \(build))"
     }
 
     /// Opens the bug report form with the version fields prefilled via the

@@ -5,7 +5,6 @@
 //  Created by Richard Kunkli on 09/08/2024.
 //
 
-import Defaults
 import Sparkle
 import SwiftUI
 
@@ -38,7 +37,6 @@ struct CheckForUpdatesView: View {
 struct UpdaterSettingsView: View {
     private let updater: SPUUpdater
 
-    @Default(.updateChannel) private var updateChannel
     @State private var automaticallyChecksForUpdates: Bool
     @State private var automaticallyDownloadsUpdates: Bool
 
@@ -52,26 +50,8 @@ struct UpdaterSettingsView: View {
         Section(
             header: HStack {
                 Text("Software updates")
-            },
-            footer: Text(
-                NSLocalizedString(
-                    "Stable and Beta come from official releases.",
-                    comment: "Software updates channel footer"
-                )
-            )
+            }
         ) {
-            Picker(
-                NSLocalizedString("Update channel", comment: "Software updates channel picker label"),
-                selection: $updateChannel
-            ) {
-                ForEach(UpdateChannel.visibleCases) { channel in
-                    Text(channel.title).tag(channel)
-                }
-            }
-            .onChange(of: updateChannel) { _, _ in
-                updater.resetUpdateCycle()
-            }
-
             Toggle("Automatically check for updates", isOn: $automaticallyChecksForUpdates)
                 .onChange(of: automaticallyChecksForUpdates) { _, newValue in
                     updater.automaticallyChecksForUpdates = newValue

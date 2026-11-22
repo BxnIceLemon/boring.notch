@@ -66,7 +66,9 @@ enum MusicPlayerImageSizes {
 
 @MainActor private func resolvedMenuBarHeight(for screen: NSScreen?) -> CGFloat {
     if let screen {
-        let measuredHeight = max(0, screen.frame.maxY - screen.visibleFrame.maxY - 1)
+        // The full menu bar height, as 2.7.3 measured it. (An extra "- 1" here made the closed
+        // notch one point shorter than the menu bar.) 0 means the menu bar is hidden.
+        let measuredHeight = max(0, screen.frame.maxY - screen.visibleFrame.maxY)
         if measuredHeight > 0 {
             return measuredHeight
         }
@@ -172,7 +174,21 @@ enum LegacyNonNotchHeightMigration {
            let topRightNotchpadding: CGFloat = screen.auxiliaryTopRightArea?.width {
             notchWidth = screen.frame.width - topLeftNotchpadding - topRightNotchpadding + 4
         }
-        notchHeight = screen.safeAreaInsets.top > 0 ? Defaults[.notchHeight] : Defaults[.nonNotchHeight]
+        // "Match" modes are measured on this screen every time, like 2.7.3 did: the stored
+        // height comes from whichever screen was checked first and goes stale when the menu
+        // bar changes, so it is only used for custom heights.
+        if screen.safeAreaInsets.top > 0 {
+            switch Defaults[.notchHeightMode] {
+            case .matchRealNotchSize: notchHeight = screen.safeAreaInsets.top
+            case .matchMenuBar: notchHeight = resolvedMenuBarHeight(for: screen)
+            case .custom: notchHeight = Defaults[.notchHeight]
+            }
+        } else {
+            switch Defaults[.nonNotchHeightMode] {
+            case .matchMenuBar: notchHeight = resolvedMenuBarHeight(for: screen)
+            case .matchRealNotchSize, .custom: notchHeight = Defaults[.nonNotchHeight]
+            }
+        }
     }
 
     return .init(width: notchWidth, height: notchHeight)

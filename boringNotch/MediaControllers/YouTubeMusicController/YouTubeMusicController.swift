@@ -322,7 +322,9 @@ final class YouTubeMusicController: MediaControllerProtocol {
                 copy.volume = Double(volume) / 100.0
             }
             copy.lastUpdated = Date()
-            if copy != playbackState { playbackState = copy }
+            // PlaybackState's == ignores volume on purpose, so compare it here: otherwise a
+            // volume-only change is dropped.
+            if copy != playbackState || copy.volume != playbackState.volume { playbackState = copy }
         }
     }
 
@@ -520,6 +522,9 @@ final class YouTubeMusicController: MediaControllerProtocol {
                     } catch { /* ignore */ }
                 }
             }
+        } else if newState.volume != playbackState.volume {
+            // == ignores volume: publish a volume-only change without the track-change work above.
+            playbackState.volume = newState.volume
         }
     }
 
